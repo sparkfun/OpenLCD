@@ -1,36 +1,41 @@
-# Ignore list for Eagle, a PCB layout tool
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-# Backup files
+#Eagle Backup files
 *.s#?
 *.b#?
 *.l#?
 
-# Eagle project file
-# It contains a serial number and references to the file structure
-# on your computer.
-# comment the following line if you want to have your project file included.
-eagle.epf
+# Folder config file
+Desktop.ini
 
-# CAM files
-*.$$$
-*.cmp
-*.ly2
-*.l15
-*.sol
-*.plc
-*.stc
-*.sts
-*.crc
-*.crs
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
-*.dri
-*.drl
-*.gpi
-*.pls
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
 
-*.drd
-*.drd.*
+# =========================
+# Operating System Files
+# =========================
 
-*.info
+# OSX
+# =========================
 
-*.eps
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must ends with two \r.
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
