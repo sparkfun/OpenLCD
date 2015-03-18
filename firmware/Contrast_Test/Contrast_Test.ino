@@ -69,15 +69,20 @@ void setup()
 {
   setupBacklight(); //Turn on any backlights
   setupDisplay(); //Initialize the LCD
-  setupSplash(); //Read and display the user's splash screen
+//  setupSplash(); //Read and display the user's splash screen
 
   setupUART(); //Setup serial
-  setupSPI(); //Initialize SPI stuff (enable, mode, interrupts)
+//  setupSPI(); //Initialize SPI stuff (enable, mode, interrupts)
   setupTWI(); //Initialize I2C stuff (address, interrupt, enable)
-//  setupTimer(); //Setup timer to control interval reading from buffer
 
   //  interrupts();  // Turn interrupts on, and les' go
-
+  
+  pinMode(9, OUTPUT);
+  
+  SerLCD.print("Hello world");
+  analogWrite(9, 20);
+  
+  while(1);
 }
 
 void loop()
@@ -90,14 +95,9 @@ void loop()
 
   while(buffer.tail != buffer.head) updateDisplay(); //If there is new data in the buffer, display it!
   
-  //Then we do nothing. The TMR1 interrupt will fire the updateDisplay() function that takes characters
-  //from the buffer and deals with them. Commands or settings get dealt with and characters get displayed.
-  
-//TODO Consider removing this delay. Not needed, I'm just scared
-  delay(1);
 }
 
-// updateDisplay(): This beast of a function is called by the Timer 1 ISR if there is new data in the buffer. 
+// updateDisplay(): This beast of a function is called by the main loop if there is new data in the buffer. 
 // If the data relates to a commandMode or settingMode will be set accordingly or a command/setting 
 // will be executed from this function.
 // If the incoming data is just a character it will be displayed

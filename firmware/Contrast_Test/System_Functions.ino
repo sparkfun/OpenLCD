@@ -61,16 +61,6 @@ void twiReceive(int rxCount)
   }
 }
 
-// setupTimer(): Set up timer 1, which controls interval reading from the buffer
-//TODO - How often does this timer fire?
-void setupTimer()
-{
-  // Timer 1 is se to CTC mode, 16-bit timer counts up to 0xFF
-  TCCR1B = (1<<WGM12) | (1<<CS10);
-  OCR1A = 0x00FF;
-  TIMSK1 = (1<<OCIE1A);  // Enable interrupt on compare
-}
-
 //This sets up the UART with the stored baud rate in EEPROM
 void setupUART()
 {
@@ -148,7 +138,7 @@ void setupSPI()
 {
   pinMode(SPI_SCK, INPUT);
   pinMode(SPI_MOSI, INPUT);
-  pinMode(SPI_CS, INPUT); //There is a 10k pull up on the SS pin
+  pinMode(SPI_CS, INPUT_PULLUP);
 
   SPCR = (1<<SPIE) | (1<<SPE);  // Enable SPI interrupt, enable SPI
   // DORD = 0, LSB First
