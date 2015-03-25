@@ -207,7 +207,6 @@
 <text x="32.258" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">TXO</text>
 <text x="34.798" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">RXI</text>
 <text x="37.338" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">VCC</text>
-<text x="39.878" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">NC</text>
 <text x="42.418" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">GND</text>
 <polygon width="0.127" layer="21">
 <vertex x="7.366" y="27.051"/>
@@ -273,7 +272,6 @@
 <text x="31.242" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">TXO</text>
 <text x="33.782" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">RXI</text>
 <text x="36.322" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">VCC</text>
-<text x="38.862" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">NC</text>
 <text x="41.402" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">GND</text>
 <text x="24.638" y="28.575" size="1.016" layer="21" font="vector" ratio="15">PU</text>
 <text x="41.402" y="27.94" size="1.016" layer="21" font="vector" ratio="15" rot="R270">VCC</text>
@@ -284,6 +282,8 @@
 <text x="18.542" y="27.94" size="1.016" layer="21" font="vector" ratio="15" rot="R270">D4</text>
 <text x="16.002" y="27.94" size="1.016" layer="21" font="vector" ratio="15" rot="R270">D5</text>
 <text x="13.462" y="27.94" size="1.016" layer="21" font="vector" ratio="15" rot="R270">D6</text>
+<text x="39.878" y="2.921" size="1.016" layer="21" font="vector" ratio="15" rot="R90">GND</text>
+<text x="38.862" y="2.921" size="1.016" layer="22" font="vector" ratio="15" rot="MR90">GND</text>
 </plain>
 <libraries>
 <library name="SparkFun">
@@ -2577,8 +2577,8 @@ design rules under a new name.</description>
 <attribute name="PROD_ID" value="RES-07857" x="22.86" y="27.94" size="1.778" layer="27" font="vector" ratio="15" rot="R90" display="off"/>
 </element>
 <element name="SJ4" library="SparkFun-Passives" package="PAD-JUMPER-3-NC_BY_PASTE_YES_SILK_FULL_BOX" value="I2C-PU" x="25.4" y="27.305"/>
-<element name="TP1" library="SparkFun-Passives" package="PAD.03X.04" value="" x="5.08" y="7.62" rot="MR0"/>
-<element name="TP2" library="SparkFun-Passives" package="PAD.03X.04" value="" x="16.51" y="15.24" rot="MR0"/>
+<element name="TP1" library="SparkFun-Passives" package="PAD.03X.04" value="" x="3.175" y="7.62" rot="MR0"/>
+<element name="TP2" library="SparkFun-Passives" package="PAD.03X.04" value="" x="19.685" y="15.621" rot="MR0"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -3095,8 +3095,6 @@ design rules under a new name.</description>
 <wire x1="18.97614375" y1="14.3232" x2="19.685" y2="15.03205625" width="0.254" layer="1"/>
 <wire x1="19.685" y1="15.03205625" x2="19.685" y2="15.621" width="0.254" layer="1"/>
 <via x="19.685" y="15.621" extent="1-16" drill="0.508"/>
-<wire x1="19.685" y1="15.621" x2="19.304" y2="15.24" width="0.254" layer="16"/>
-<wire x1="19.304" y1="15.24" x2="16.51" y2="15.24" width="0.254" layer="16"/>
 </signal>
 <signal name="N$6">
 <contactref element="U3" pad="4"/>
@@ -3116,12 +3114,11 @@ design rules under a new name.</description>
 <wire x1="4.23" y1="10.795" x2="4.23" y2="10.121" width="0.254" layer="1"/>
 <wire x1="4.23" y1="10.121" x2="4.63" y2="9.721" width="0.254" layer="1"/>
 <wire x1="4.63" y1="8.89" x2="4.63" y2="9.721" width="0.254" layer="1"/>
-<contactref element="TP1" pad="P$1"/>
 <via x="3.175" y="7.62" extent="1-16" drill="0.508"/>
-<wire x1="3.175" y1="7.62" x2="5.08" y2="7.62" width="0.254" layer="16"/>
 <wire x1="4.63" y1="8.89" x2="3.556" y2="8.89" width="0.254" layer="1"/>
 <wire x1="3.556" y1="8.89" x2="3.175" y2="8.509" width="0.254" layer="1"/>
 <wire x1="3.175" y1="8.509" x2="3.175" y2="7.62" width="0.254" layer="1"/>
+<contactref element="TP1" pad="P$1"/>
 </signal>
 <signal name="N$9">
 <contactref element="SJ4" pad="1"/>
