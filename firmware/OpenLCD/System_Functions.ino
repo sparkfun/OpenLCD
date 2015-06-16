@@ -1,5 +1,5 @@
 /* 
- Serial LCD System Functions
+ OpenLCD System Functions
 
  See main file for license and information.
 
@@ -61,6 +61,16 @@ void twiReceive(int rxCount)
   }
 }
 
+// setupTimer(): Set up timer 1, which controls interval reading from the buffer
+//TODO - How often does this timer fire?
+void setupTimer()
+{
+  // Timer 1 is se to CTC mode, 16-bit timer counts up to 0xFF
+  TCCR1B = (1<<WGM12) | (1<<CS10);
+  OCR1A = 0x00FF;
+  TIMSK1 = (1<<OCIE1A);  // Enable interrupt on compare
+}
+
 //This sets up the UART with the stored baud rate in EEPROM
 void setupUART()
 {
@@ -68,69 +78,42 @@ void setupUART()
   byte settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
   if(settingIgnoreRX > 1)
   {
-    settingIgnoreRX = 0; //Don't ignore
+    settingIgnoreRX = false; //Don't ignore
     EEPROM.write(LOCATION_IGNORE_RX, settingIgnoreRX);
   }
     
-  if(settingIgnoreRX == 0) //If we are NOT ignoring RX, then
+  if(settingIgnoreRX == false) //If we are NOT ignoring RX, then
     checkEmergencyReset(); //Look to see if the RX pin is being pulled low
   
   //Read what the current UART speed is from EEPROM memory
   //Default is 9600
   settingUARTSpeed = EEPROM.read(LOCATION_BAUD);
-  if (settingUARTSpeed > BAUD_115200) //Check to see if the baud rate has ever been set
+  if (settingUARTSpeed > BAUD_1000000) //Check to see if the baud rate has ever been set
   {
     settingUARTSpeed = DEFAULT_BAUD; //Reset UART to 9600 if there is no baud rate stored
     EEPROM.write(LOCATION_BAUD, settingUARTSpeed);
   }
 
   //Initialize the UART
-  switch (settingUARTSpeed)
-  {
-    case (BAUD_2400):
-      Serial.begin(2400);
-      break;
-    case (BAUD_4800):
-      Serial.begin(4800);
-      break;
-    case (BAUD_9600):
-      Serial.begin(9600);
-      break;
-    case (BAUD_14400):
-      Serial.begin(14400);
-      break;
-    case (BAUD_19200):
-      Serial.begin(19200);
-      break;
-    case (BAUD_38400):
-      Serial.begin(38400);
-      break;
-    case (BAUD_57600):
-      Serial.begin(57600);
-      break;
-    case (BAUD_76800):
-      Serial.begin(76800);
-      break;
-    case (BAUD_115200):
-      Serial.begin(115200);
-      break;
-    /*    case(BAUD_250000):
-        Serial.begin(250000);
-        break;
-        case(BAUD_500000):
-        Serial.begin(500000);
-        break;
-        case(BAUD_1000000):
-        Serial.begin(1000000);
-        break;
-        */
-    default:
-      //We should never reach this state, but if we do
-      Serial.begin(9600);
-      break;
-  }
-
+  Serial.begin(lookUpBaudRate(settingUARTSpeed));
 }
+
+//This sets up the contrast
+void setupContrast()
+{
+  //Read what the current contrast is, default is 200
+  byte settingContrast = EEPROM.read(LOCATION_CONTRAST);
+  if (settingContrast == 255) //Check to see if the baud rate has ever been set
+  {
+    settingContrast = DEFAULT_CONTRAST; //Default contrast to 200
+    EEPROM.write(LOCATION_CONTRAST, settingContrast);
+  }
+  
+  //Set contrast pin
+  pinMode(LCD_CONTRAST, OUTPUT);
+  analogWrite(LCD_CONTRAST, settingContrast);
+}
+
 
 // setupSPI(): Initialize SPI, sets up hardware pins and enables spi and receive interrupt
 // SPI is set to MODE 0 (CPOL=0, CPHA=0), slave mode, LSB first
@@ -138,7 +121,7 @@ void setupSPI()
 {
   pinMode(SPI_SCK, INPUT);
   pinMode(SPI_MOSI, INPUT);
-  pinMode(SPI_CS, INPUT_PULLUP);
+  pinMode(SPI_CS, INPUT); //There is a 10k pull up on the SS pin
 
   SPCR = (1<<SPIE) | (1<<SPE);  // Enable SPI interrupt, enable SPI
   // DORD = 0, LSB First
@@ -185,8 +168,20 @@ void setupDisplay()
     EEPROM.write(LOCATION_WIDTH, settingLCDwidth);
   }
   
-//  SerLCD.begin(settingLCDwidth, settingLCDlines); //Setup the width and lines for this LCD
-  SerLCD.begin(16, 2); //Setup the width and lines for this LCD
+//TODO test this
+  //Check the display jumper
+  //If the jumper is set, use it
+  pinMode(SIZE_JUMPER, INPUT_PULLUP);
+  if(digitalRead(SIZE_JUMPER) == LOW)
+  {
+    settingLCDlines = 4;
+    settingLCDwidth = 20;
+  }
+
+  SerLCD.begin(settingLCDwidth, settingLCDlines); //Setup the width and lines for this LCD
+
+  //Clear any characters in the frame buffer
+  clearFrameBuffer();
 }
 
 //Look up and start the 3 backlight pins in analog mode
@@ -196,17 +191,15 @@ void setupBacklight()
   pinMode(BL_G, OUTPUT);
   pinMode(BL_B, OUTPUT);
   
-  analogWrite(BL_RW, EEPROM.read(LOCATION_RED_BRIGHTNESS));
-  analogWrite(BL_G, EEPROM.read(LOCATION_GREEN_BRIGHTNESS));
-  analogWrite(BL_B, EEPROM.read(LOCATION_BLUE_BRIGHTNESS));
-
-//TODO Testing
-  analogWrite(BL_RW, 20);
+  //By default EEPROM is 255 or 100% brightness
+  //Because it's PNP transistor we need to invert the logic (or subtract the user value from 255)
+  analogWrite(BL_RW, 255 - EEPROM.read(LOCATION_RED_BRIGHTNESS));
+  analogWrite(BL_G, 255 - EEPROM.read(LOCATION_GREEN_BRIGHTNESS));
+  analogWrite(BL_B, 255 - EEPROM.read(LOCATION_BLUE_BRIGHTNESS));
 }
 
 void setupSplash()
 {
-  SerLCD.clear(); //Get rid of any garbage on the screen
 
   //Find out if we should display the splash or not
   settingSplashEnable = EEPROM.read(LOCATION_SPLASH_ONOFF);
@@ -219,32 +212,64 @@ void setupSplash()
   if(settingSplashEnable)
   {
     //Look up user content from memory
-    byte content = EEPROM.read(LOCATION_SPLASH_CONTENT_LINE1);
-    if(content != 0xFF)
+    byte content = EEPROM.read(LOCATION_SPLASH_CONTENT);
+
+    if(content == 0xFF)
     {
-//TODO - Make this work with 20 character displays as well
-      for(byte x = 0 ; x < 16 ; x++)
-        SerLCD.write(EEPROM.read(LOCATION_SPLASH_CONTENT_LINE1 + x));
-
+      //Display the default splash screen
+      //This should work with both 16 and 20 character displays
+      SerLCD.clear();
+      SerLCD.setCursor(0, 0); //First position, 1st row
+      SerLCD.print("SparkFun");
       SerLCD.setCursor(0, 1); //First position, 2nd row
-
-      for (byte x = 0 ; x < 16 ; x++)
-        SerLCD.write(EEPROM.read(LOCATION_SPLASH_CONTENT_LINE2 + x));
-
+      SerLCD.print("    OpenLCD");
     }
     else
     {
-      //Display the default
-      //This should work with both 16 and 20 character displays
-      SerLCD.setCursor(0, 0); //First position, 1st row
-      SerLCD.print("SparkFun.com");
-      SerLCD.setCursor(0, 1); //First position, 2nd row
-      SerLCD.print("SerLCD v3");
+      //Pull splash content from EEPROM
+      
+      //Copy the EEPROM to the character buffer
+      for(byte x = 0 ; x < settingLCDlines * settingLCDwidth ; x++)
+        currentFrame[x] = EEPROM.read(LOCATION_SPLASH_CONTENT + x);
+  
+      //Now display the splash
+      displayFrameBuffer();
     }
 
-    delay(1000); //Hold spash screen for an amount of time
+    //While we hold the splash screen monitor for incoming serial
+    Serial.begin(9600); //During this period look for characters at 9600bps
+    for(byte x = 0 ; x < (SYSTEM_MESSAGE_DELAY/10) ; x++)
+    {
+      //Reverse compatiblity with SerLCD 2.5: a ctrl+r during splash will reset unit to 9600bps.
+      if(Serial.available())
+      {
+        if(Serial.read() == 18) //ctrl+r
+        {
+          //Reset baud rate
+          SerLCD.clear();
+          SerLCD.setCursor(0, 0); //First position, 1st row
+          
+          SerLCD.print("Baud Reset");
+          
+          EEPROM.write(LOCATION_BAUD, BAUD_9600);
+
+          petSafeDelay(SYSTEM_MESSAGE_DELAY);
+          
+          break;
+        }
+      } //This assumes that Serial.begin() will happen later
+      
+      //serialEvent(); //Check the serial buffer for new data
+      petSafeDelay(10); //Hang out looking for new characters
+    }
+
+    //Now erase it and the buffer
+    clearFrameBuffer();
+
     SerLCD.clear(); //Trash the splash
     SerLCD.setCursor(0, 0); //Reset cursor
+    
+    //After this function we go back to system baud rate
   }
 
 }
@@ -265,6 +290,7 @@ void checkEmergencyReset(void)
   digitalWrite(BL_RW, HIGH); //Set the STAT2 LED
   for(byte i = 0 ; i < 80 ; i++)
   {
+    wdt_reset(); //Pet the dog
     delay(25);
 
     //Blink backlight
@@ -277,10 +303,12 @@ void checkEmergencyReset(void)
   }		
 
   //If we make it here, then RX pin stayed low the whole time
-  EEPROM.write(LOCATION_BAUD, DEFAULT_BAUD); //Reset baud rate
+  //Reset all EEPROM locations to factory defaults.
+  for(int x = 0 ; x < 200 ; x++)
+    EEPROM.write(x, 0xFF);
   
   SerLCD.clear();
-  SerLCD.print("9600bps reset");
+  SerLCD.print("System reset");
   SerLCD.setCursor(0, 1); //First position, 2nd row
   SerLCD.print("Power cycle me");
 
@@ -288,7 +316,7 @@ void checkEmergencyReset(void)
   digitalWrite(BL_RW, HIGH);
   while(1)
   {
-    delay(500);
+    petSafeDelay(500);
 
     //Blink backlight
     if(digitalRead(BL_RW))
@@ -296,5 +324,47 @@ void checkEmergencyReset(void)
     else
       digitalWrite(BL_RW, HIGH);
   }
+}
+
+//We store the baud rate as a single digit in EEPROM
+//This function converts the byte to the actual baud rate
+long lookUpBaudRate(byte setting)
+{
+  switch(setting)
+  {
+    case BAUD_2400: return(2400);
+    case BAUD_4800: return(4800);
+    case BAUD_9600: return(9600);
+    case BAUD_14400: return(14400);
+    case BAUD_19200: return(19200);
+    case BAUD_38400: return(38400);
+    case BAUD_57600: return(57600);
+    case BAUD_115200: return(115200);
+    case BAUD_230400: return(230400);
+    case BAUD_460800: return(460800);
+    case BAUD_921600: return(921600);
+    case BAUD_1000000: return(1000000);
+  }
+ 
+}
+
+//Delays for a specified period that is pet safe
+void petSafeDelay(int delayAmount)
+{
+  long startTime = millis();
+  
+  while(millis() - startTime < delayAmount)
+  {
+    wdt_reset(); //Pet the dog
+    
+    //Max 100ms delay
+    for(byte x = 0 ; x < 100 ; x++)
+    {
+      delay(1);
+      if( (millis() - startTime) >= delayAmount) break;
+    }
+  }
+
+  wdt_reset(); //Pet the dog
 }
 
