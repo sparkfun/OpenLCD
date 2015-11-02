@@ -98,23 +98,6 @@ void setupUART()
   Serial.begin(lookUpBaudRate(settingUARTSpeed));
 }
 
-//This sets up the contrast
-void setupContrast()
-{
-  //Read what the current contrast is, default is 200
-  byte settingContrast = EEPROM.read(LOCATION_CONTRAST);
-  if (settingContrast == 255) //Check to see if the baud rate has ever been set
-  {
-    settingContrast = DEFAULT_CONTRAST; //Default contrast to 200
-    EEPROM.write(LOCATION_CONTRAST, settingContrast);
-  }
-  
-  //Set contrast pin
-  pinMode(LCD_CONTRAST, OUTPUT);
-  analogWrite(LCD_CONTRAST, settingContrast);
-}
-
-
 // setupSPI(): Initialize SPI, sets up hardware pins and enables spi and receive interrupt
 // SPI is set to MODE 0 (CPOL=0, CPHA=0), slave mode, LSB first
 void setupSPI()

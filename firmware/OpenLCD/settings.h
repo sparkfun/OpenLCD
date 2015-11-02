@@ -11,24 +11,7 @@
 #define BL_RW 5 //PWM
 #define BL_G  6 //PWM
 #define BL_B  8 //Non-PWM
-#define LCD_CONTRAST 9 //PWM
 #define SIZE_JUMPER 7
-
-//For the kit during testing
-/*
-#define LCD_RS 2
-#define LCD_RW 3
-#define LCD_EN 4
-#define LCD_D4 5
-#define LCD_D5 6
-#define LCD_D6 7
-#define LCD_D7 8
-#define LCD_CONTRAST 9 //It was 10 but then we started SPI testing....
-#define BL_RW 9
-#define BL_G  12 //Not used
-#define BL_B  11 //Not used
-#define SIZE_JUMPER A0
-*/
 
 #define SPI_CS 10 //As a slave device CS pin must always be 10
 #define SPI_MOSI 11
@@ -52,12 +35,10 @@
 
 const byte DEFAULT_TWI_ADDRESS = 0x72; //0x71 for Serial7Segment. 0x72 for SerLCD.
 const byte DEFAULT_BAUD = BAUD_9600;  //9600 for 8MHz, 2x speed
-const byte DEFAULT_BRIGHTNESS = 100;  //100%, full brightness
+const byte DEFAULT_BRIGHTNESS = 255;  //100%, full brightness
 const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on
-const byte DEFAULT_CONTRAST = 120; //120 works well on 16x2 single backlight
-//const byte DEFAULT_CONTRAST = 30; //On the RGB module 30 works well
 
 //Internal EEPROM locations for the user settings
 #define LOCATION_BAUD 0
@@ -70,7 +51,6 @@ const byte DEFAULT_CONTRAST = 120; //120 works well on 16x2 single backlight
 #define LOCATION_BLUE_BRIGHTNESS 7
 #define LOCATION_IGNORE_RX 8
 #define LOCATION_TWI_ADDRESS 9
-#define LOCATION_CONTRAST 10
 #define LOCATION_SPLASH_CONTENT 20
 
 //Define the various commands

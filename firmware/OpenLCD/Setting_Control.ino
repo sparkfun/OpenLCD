@@ -33,25 +33,6 @@ void changeIgnore()
   displayFrameBuffer(); //Return the contents of the display
 }
 
-//Change the digital contrast
-//Press a or z to adjust, x to exit
-void changeContrast(byte contrast)
-{
-  EEPROM.write(LOCATION_CONTRAST, contrast); //Store this new contrast
-  analogWrite(LCD_CONTRAST, contrast); //Go to this new contrast
-
-  //Display the new contrast
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
-  SerLCD.print("Contrast Set");
-  SerLCD.setCursor(0, 1); //First position, 2nd row
-  SerLCD.print(contrast);
-
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
-
-  displayFrameBuffer(); //Display what was there before
-}
-
 //Change the I2C or TWI address
 void changeTWIAddress(unsigned char newAddress)
 {

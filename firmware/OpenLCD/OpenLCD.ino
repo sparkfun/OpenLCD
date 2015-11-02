@@ -9,11 +9,12 @@
  serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
  This is an updated serial LCD.
  
- 8MHz Pro Mini
+ Select 'Arduino Pro or Pro Mini' as the board. Processor: 'ATmega328 (3.3V / 8MHz)'
 
  Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
 
  Todo:
+ Add ability to add custom characters
  -Check for size jumper
  Check how splash screen works on 16 vs 20 width displays
  -Display message when resetting baud rate
@@ -61,7 +62,6 @@ char currentFrame[DISPLAY_BUFFER_SIZE]; //Max of 4 x 20 LCD
 
 bool modeCommand = false; //Used to indicate if a command byte has been received
 bool modeSetting = false; //Used to indicate if a setting byte has been received
-bool modeContrast = false; //First setting mode, then contrast change mode, then the value to change to
 bool modeTWI = false; //First setting mode, then TWI change mode, then the value to change to
 
 // Struct for circular data buffer data received over UART, SPI and I2C are all sent into a single buffer
@@ -82,12 +82,8 @@ void setup()
   //for(int x = 0 ; x < 200 ; x++)
   //  EEPROM.write(x, 0xFF);
   
-  //Used to test contrast
-  EEPROM.write(LOCATION_CONTRAST, DEFAULT_CONTRAST);
-
-  setupContrast(); //Set contrast
   setupBacklight(); //Turn on any backlights
-  
+
   delay(10); //The OLED at 3.3V seems to need some time before we init (5V works fine). 1 is too short, 10 works
   
   setupDisplay(); //Initialize the LCD
@@ -153,7 +149,7 @@ void updateDisplay()
   buffer.tail = (buffer.tail + 1) % BUFFER_SIZE;  // and update the tail to the next oldest
 
   //If the last byte received wasn't special
-  if (modeCommand == false && modeSetting == false && modeContrast == false && modeTWI == false)
+  if (modeCommand == false && modeSetting == false && modeTWI == false)
   {
     //Check to see if the incoming byte is special
     if(incoming == SPECIAL_SETTING) modeSetting = true; //SPECIAL_SETTING is 127
@@ -210,13 +206,6 @@ void updateDisplay()
       changeUARTSpeed(incoming - 11);
     }
 
-    //Set contrast
-    else if (incoming == 24) //Ctrl+x
-    {
-      modeContrast = true;
-      //We now grab the next character on the next loop and use it to change the contrast
-    }
-
     //Set TWI address
     else if (incoming == 25) //Ctrl+y
     {
@@ -271,13 +260,6 @@ void updateDisplay()
     changeTWIAddress(incoming);
     
     modeTWI = false;
-  }
-  else if (modeContrast == true)
-  {
-    //Adjust the contrast
-    changeContrast(incoming);
-    
-    modeContrast = false;
   }
   else if (modeCommand == true) //Deal with lower level commands
   {
