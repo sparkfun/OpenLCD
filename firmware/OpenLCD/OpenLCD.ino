@@ -346,9 +346,21 @@ void updateDisplay()
       if(incoming & 1<<2) SerLCD.display();
       else SerLCD.noDisplay();
     }
+    
+    else if( (incoming >> 4) != 3 ) //If not 0b.0000.0011, then send it to LCD
+    {
+      //For debugging
+      digitalWrite(BL_RW, HIGH); //Off
+      delay(250);
+      digitalWrite(BL_RW, LOW); //ON
+      
+      //We ignore the command that could set LCD to 8bit mode
+      //But otherwise give the user the ability to pass commands directly
+      //into the LCD. Creating custom characters is an example
+      SerLCD.write(incoming);
+    }
 
-    //We ignore the command that could set LCD to 8bit mode
-    modeCommand = false;
+    modeCommand = false; //Clear flag
   }
 
 }
