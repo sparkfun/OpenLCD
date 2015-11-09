@@ -56,7 +56,7 @@
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="yes"/>
 <layer number="51" name="tDocu" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="no" active="yes"/>
@@ -90,6 +90,8 @@
 <layer number="111" name="LPC17xx" color="7" fill="1" visible="no" active="yes"/>
 <layer number="112" name="tSilk" color="7" fill="1" visible="no" active="yes"/>
 <layer number="113" name="IDFDebug" color="7" fill="1" visible="no" active="yes"/>
+<layer number="114" name="Badge_Outline" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="115" name="ReferenceISLANDS" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="116" name="Patch_BOT" color="9" fill="4" visible="no" active="yes"/>
 <layer number="118" name="Rect_Pads" color="7" fill="1" visible="no" active="yes"/>
 <layer number="121" name="_tsilk" color="7" fill="1" visible="no" active="yes"/>
@@ -683,7 +685,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <smd name="1" x="0" y="0" dx="1" dy="1" layer="1" roundness="100" cream="no"/>
 </package>
 <package name="SFE_LOGO_NAME_.1">
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="0.87" y="1.8"/>
 <vertex x="0.88" y="1.74"/>
 <vertex x="0.9" y="1.7"/>
@@ -797,7 +799,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="0.78" y="1.8"/>
 <vertex x="0.82" y="1.8"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="2.98" y="1.8"/>
 <vertex x="3" y="1.88"/>
 <vertex x="3.01" y="1.96"/>
@@ -807,7 +809,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="3.37" y="1.76"/>
 <vertex x="3.32" y="1.64"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="3.32" y="1.64"/>
 <vertex x="3.25" y="1.53"/>
 <vertex x="3.16" y="1.44"/>
@@ -909,7 +911,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="2.94" y="1.74"/>
 <vertex x="2.98" y="1.8"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="3.99" y="2.15"/>
 <vertex x="4.08" y="2.17"/>
 <vertex x="4.17" y="2.18"/>
@@ -926,7 +928,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="4.09" y="1.94"/>
 <vertex x="4.07" y="1.94"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="4.07" y="1.94"/>
 <vertex x="4.05" y="1.93"/>
 <vertex x="4.03" y="1.92"/>
@@ -1186,7 +1188,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="3.91" y="2.14"/>
 <vertex x="3.99" y="2.15"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="5.06" y="2.69"/>
 <vertex x="5.11" y="2.7"/>
 <vertex x="5.16" y="2.71"/>
@@ -1269,7 +1271,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="5.06" y="2.35"/>
 <vertex x="5.06" y="2.52"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="6.13" y="3.08"/>
 <vertex x="6.51" y="3.3"/>
 <vertex x="6.51" y="2.25"/>
@@ -1283,7 +1285,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="6.51" y="1.34"/>
 <vertex x="6.13" y="1.34"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="7.76" y="2.5"/>
 <vertex x="7.71" y="2.5"/>
 <vertex x="7.66" y="2.5"/>
@@ -1413,7 +1415,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="7.76" y="2.21"/>
 <vertex x="7.76" y="2.35"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="9.85" y="1.34"/>
 <vertex x="9.8" y="1.34"/>
 <vertex x="9.76" y="1.34"/>
@@ -1511,7 +1513,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <vertex x="9.85" y="1.7"/>
 <vertex x="9.85" y="1.52"/>
 </polygon>
-<polygon width="0.01" layer="21">
+<polygon width="0.0762" layer="21">
 <vertex x="10.07" y="2.76"/>
 <vertex x="10.11" y="2.76"/>
 <vertex x="10.16" y="2.76"/>
@@ -2154,10 +2156,10 @@ We've spent an enormous amount of time creating and checking these footprints an
 You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
 <packages>
 <package name="0603-RES">
-<wire x1="-1.473" y1="0.983" x2="1.473" y2="0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="0.983" x2="1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="-0.983" x2="-1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="-1.473" y1="-0.983" x2="-1.473" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="-1.6002" y1="0.6858" x2="1.6002" y2="0.6858" width="0.0508" layer="39"/>
+<wire x1="1.6002" y1="0.6858" x2="1.6002" y2="-0.6858" width="0.0508" layer="39"/>
+<wire x1="1.6002" y1="-0.6858" x2="-1.6002" y2="-0.6858" width="0.0508" layer="39"/>
+<wire x1="-1.6002" y1="-0.6858" x2="-1.6002" y2="0.6858" width="0.0508" layer="39"/>
 <wire x1="-0.356" y1="0.432" x2="0.356" y2="0.432" width="0.1016" layer="51"/>
 <wire x1="-0.356" y1="-0.419" x2="0.356" y2="-0.419" width="0.1016" layer="51"/>
 <smd name="1" x="-0.85" y="0" dx="1.1" dy="1" layer="1"/>
@@ -2167,7 +2169,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <rectangle x1="-0.8382" y1="-0.4699" x2="-0.3381" y2="0.4801" layer="51"/>
 <rectangle x1="0.3302" y1="-0.4699" x2="0.8303" y2="0.4801" layer="51"/>
 <rectangle x1="-0.1999" y1="-0.3" x2="0.1999" y2="0.3" layer="35"/>
-<rectangle x1="-0.2286" y1="-0.381" x2="0.2286" y2="0.381" layer="21"/>
+<rectangle x1="-0.1905" y1="-0.381" x2="0.1905" y2="0.381" layer="21"/>
 </package>
 </packages>
 </library>
@@ -2187,7 +2189,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="-1.473" y1="-0.983" x2="-1.473" y2="0.983" width="0.0508" layer="39"/>
 <wire x1="-0.356" y1="0.432" x2="0.356" y2="0.432" width="0.1016" layer="51"/>
 <wire x1="-0.356" y1="-0.419" x2="0.356" y2="-0.419" width="0.1016" layer="51"/>
-<wire x1="0" y1="0.0305" x2="0" y2="-0.0305" width="0.5588" layer="21"/>
+<wire x1="0" y1="0.027940625" x2="0" y2="-0.027940625" width="0.381" layer="21"/>
 <smd name="1" x="-0.85" y="0" dx="1.1" dy="1" layer="1"/>
 <smd name="2" x="0.85" y="0" dx="1.1" dy="1" layer="1"/>
 <text x="-0.889" y="0.762" size="0.4064" layer="25" font="vector">&gt;NAME</text>
@@ -2394,13 +2396,6 @@ We've spent an enormous amount of time creating and checking these footprints an
 You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
 <packages>
 <package name="SOT23-6">
-<wire x1="1.4224" y1="0.8104" x2="1.4224" y2="-0.8104" width="0.2032" layer="21"/>
-<wire x1="-1.4224" y1="-0.8104" x2="-1.4224" y2="0.8104" width="0.2032" layer="21"/>
-<wire x1="-1.3276" y1="-0.8104" x2="-1.4224" y2="-0.8104" width="0.2032" layer="21"/>
-<wire x1="1.4224" y1="-0.8104" x2="1.3276" y2="-0.8104" width="0.2032" layer="21"/>
-<wire x1="1.3276" y1="0.8104" x2="1.4224" y2="0.8104" width="0.2032" layer="21"/>
-<wire x1="-1.4224" y1="0.8104" x2="-1.3276" y2="0.8104" width="0.2032" layer="21"/>
-<circle x="1.0541" y="0.3683" radius="0.0359" width="0.254" layer="21"/>
 <smd name="4" x="-0.95" y="-1.3001" dx="0.55" dy="1.2" layer="1"/>
 <smd name="5" x="0" y="-1.3001" dx="0.55" dy="1.2" layer="1"/>
 <smd name="6" x="0.95" y="-1.3001" dx="0.55" dy="1.2" layer="1"/>
@@ -2409,6 +2404,19 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <smd name="2" x="0" y="1.3001" dx="0.55" dy="1.2" layer="1" rot="R180"/>
 <text x="-0.8255" y="2.159" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-0.9525" y="-0.1905" size="0.4064" layer="27">&gt;VALUE</text>
+<wire x1="-1.27" y1="-0.4294" x2="-1.27" y2="0.4294" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="0.4294" x2="1.27" y2="-0.4294" width="0.2032" layer="21"/>
+<circle x="1.6002" y="1.016" radius="0.127" width="0" layer="21"/>
+<wire x1="1.4" y1="-0.8" x2="-1.4" y2="-0.8" width="0.1524" layer="51"/>
+<wire x1="-1.4" y1="0.8" x2="1.4" y2="0.8" width="0.1524" layer="51"/>
+<wire x1="1.4" y1="0.8" x2="1.4" y2="-0.8" width="0.1524" layer="51"/>
+<wire x1="-1.4" y1="0.8" x2="-1.4" y2="-0.8" width="0.1524" layer="51"/>
+<rectangle x1="-1.2" y1="-1.5" x2="-0.7" y2="-0.85" layer="51"/>
+<rectangle x1="-0.25" y1="-1.5" x2="0.25" y2="-0.85" layer="51"/>
+<rectangle x1="0.7" y1="-1.5" x2="1.2" y2="-0.85" layer="51"/>
+<rectangle x1="0.7" y1="0.85" x2="1.2" y2="1.5" layer="51"/>
+<rectangle x1="-1.2" y1="0.85" x2="-0.7" y2="1.5" layer="51"/>
+<rectangle x1="-0.25" y1="0.85" x2="0.25" y2="1.5" layer="51" rot="R180"/>
 </package>
 </packages>
 </library>
@@ -2423,14 +2431,20 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <class number="1" name="vcc" width="0" drill="0">
 </class>
 </classes>
-<designrules name="default *">
-<description language="en">&lt;b&gt;EAGLE Design Rules&lt;/b&gt;
+<designrules name="SparkFun-2-layer-STANDARD *">
+<description language="en">&lt;b&gt;SparkFun 2 Layer Design Rule Checks - STANDARD/TIGHT/FAB-LIMIT&lt;/b&gt;
 &lt;p&gt;
-The default Design Rules have been set to cover
-a wide range of applications. Your particular design
-may have different requirements, so please make the
-necessary adjustments and save your customized
-design rules under a new name.</description>
+These rules have been curated by SparkFuns DFM commitee. After doing much research, communicating with our multiple fab houses, and getting quotes of various designs, we have compiled three DRU files. 
+&lt;p&gt;
+&lt;b&gt;STANDARD:&lt;/b&gt; This is more of a &quot;best case scenario&quot; set of limitations. If your design has the space, and/or you have the time to work within these parameters, please do. Larger trace width and clearance makes for easier visual inspection of the PCB while troubleshooting (useful in production and to the end user). It also allows for better ability to hack a trace (if you are crazy enough to scrape away the mask and solder to a trace). Another thing to keep in mind is that more metal is just more robust. 
+&lt;p&gt;
+&lt;b&gt;TIGHT:&lt;/b&gt; This is where cost comes into play. We have found that most fab houses begin to add extra charges when you go smaller than these specs. In some cases, going to less than 15 mil trace can increase the cost by 10%. (This is why we have set the min drill on this DRU to 15 mil) Same story for traces thinner than 7 mil. To avoid those extra charges, then stay within the rules of this DRU.
+&lt;p&gt;
+&lt;b&gt;FAB-LIMIT:&lt;/b&gt; These set of rules are at the very limit of most fab houses capabilities. You will pay more for these specs, and it should be used on designs that have a darned good reason to need 4 mil vias and 4 mil traces.
+&lt;p&gt;
+**NOTE Clearance, Distance, Sizes, and Restring are all set to different limits in each of these three DRU files. Please compare the files within the CAM job editor window of eagle to see all the numbers.
+&lt;p&gt;
+***NOTE, Please set your Net Classes to default (0mil for all settings), so that it won't effect the DRC when you run it with these settings.</description>
 <param name="layerSetup" value="(1*16)"/>
 <param name="mtCopper" value="0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm"/>
 <param name="mtIsolate" value="1.5mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm"/>
@@ -2445,7 +2459,7 @@ design rules under a new name.</description>
 <param name="mdSmdSmd" value="8mil"/>
 <param name="mdViaViaSameLayer" value="8mil"/>
 <param name="mnLayersViaInSmd" value="2"/>
-<param name="mdCopperDimension" value="10mil"/>
+<param name="mdCopperDimension" value="8mil"/>
 <param name="mdDrill" value="8mil"/>
 <param name="mdSmdStop" value="0mil"/>
 <param name="msWidth" value="8mil"/>
@@ -2459,11 +2473,11 @@ design rules under a new name.</description>
 <param name="rvViaInner" value="0.25"/>
 <param name="rvMicroViaOuter" value="0.25"/>
 <param name="rvMicroViaInner" value="0.25"/>
-<param name="rlMinPadTop" value="12mil"/>
+<param name="rlMinPadTop" value="10mil"/>
 <param name="rlMaxPadTop" value="20mil"/>
 <param name="rlMinPadInner" value="10mil"/>
 <param name="rlMaxPadInner" value="20mil"/>
-<param name="rlMinPadBottom" value="12mil"/>
+<param name="rlMinPadBottom" value="10mil"/>
 <param name="rlMaxPadBottom" value="20mil"/>
 <param name="rlMinViaOuter" value="10mil"/>
 <param name="rlMaxViaOuter" value="20mil"/>
@@ -2706,7 +2720,6 @@ design rules under a new name.</description>
 <via x="8.89" y="11.049" extent="1-16" drill="0.508"/>
 <contactref element="SJ5" pad="1"/>
 <via x="1.27" y="13.97" extent="1-16" drill="0.508"/>
-<contactref element="U3" pad="2"/>
 <contactref element="SJ3" pad="1"/>
 <contactref element="R4" pad="1"/>
 <contactref element="C2" pad="2"/>
@@ -2720,6 +2733,7 @@ design rules under a new name.</description>
 <contactref element="C5" pad="C"/>
 <wire x1="25.584684375" y1="14.351" x2="24.765" y2="14.351" width="0.254" layer="1"/>
 <wire x1="24.765" y1="14.351" x2="24.638" y2="14.224" width="0.254" layer="1"/>
+<contactref element="U3" pad="2"/>
 </signal>
 <signal name="RST">
 <contactref element="R1" pad="1"/>
@@ -2914,11 +2928,9 @@ design rules under a new name.</description>
 <wire x1="38.862" y1="12.192" x2="42.291" y2="12.192" width="0.508" layer="1"/>
 <wire x1="42.291" y1="12.192" x2="43.18" y2="13.081" width="0.508" layer="1"/>
 <contactref element="U3" pad="1"/>
-<contactref element="U3" pad="3"/>
 <contactref element="C2" pad="1"/>
 <wire x1="6.35" y1="2.54" x2="1.905" y2="6.985" width="0.4064" layer="1"/>
 <wire x1="1.905" y1="10.53" x2="1.905" y2="6.985" width="0.4064" layer="1"/>
-<wire x1="7.94" y1="12.7301" x2="7.94" y2="13.528" width="0.4064" layer="1"/>
 <wire x1="9.84" y1="12.7301" x2="9.84" y2="13.528" width="0.4064" layer="1"/>
 <wire x1="1.905" y1="10.53" x2="2.656" y2="10.53" width="0.4064" layer="1"/>
 <wire x1="2.656" y1="10.53" x2="3.048" y2="10.922" width="0.4064" layer="1"/>
@@ -2927,7 +2939,6 @@ design rules under a new name.</description>
 <wire x1="3.429" y1="13.081" x2="6.35" y2="13.081" width="0.4064" layer="1"/>
 <wire x1="6.35" y1="13.081" x2="6.731" y2="13.081" width="0.4064" layer="1"/>
 <wire x1="6.731" y1="13.081" x2="7.0819" y2="12.7301" width="0.4064" layer="1"/>
-<wire x1="7.94" y1="12.7301" x2="7.0819" y2="12.7301" width="0.4064" layer="1"/>
 <wire x1="9.6266" y1="13.7414" x2="8.1534" y2="13.7414" width="0.4064" layer="1"/>
 <wire x1="7.94" y1="13.528" x2="8.1534" y2="13.7414" width="0.4064" layer="1"/>
 <wire x1="9.84" y1="13.528" x2="9.6266" y2="13.7414" width="0.4064" layer="1"/>
@@ -2946,6 +2957,9 @@ design rules under a new name.</description>
 <wire x1="6.35" y1="14.732" x2="6.35" y2="13.462" width="0.4064" layer="16"/>
 <via x="6.35" y="13.462" extent="1-16" drill="0.508"/>
 <wire x1="6.35" y1="13.462" x2="6.35" y2="13.081" width="0.4064" layer="1"/>
+<contactref element="U3" pad="3"/>
+<wire x1="7.94" y1="13.528" x2="7.94" y2="12.7301" width="0.4064" layer="1"/>
+<wire x1="7.0819" y1="12.7301" x2="7.94" y2="12.7301" width="0.4064" layer="1"/>
 </signal>
 <signal name="SDO">
 <contactref element="U1" pad="16"/>
@@ -3337,12 +3351,6 @@ design rules under a new name.</description>
 <approved hash="4,1,7a9c9712aae14510"/>
 <approved hash="4,1,049c6b6a96987b6f"/>
 <approved hash="4,1,14a1ed06ec4a1455"/>
-<approved hash="5,1,21dc69c29914b644"/>
-<approved hash="5,1,c13a7d6d6d6b5682"/>
-<approved hash="5,1,21dc69c69110be44"/>
-<approved hash="5,1,c13a7d69656f5e82"/>
-<approved hash="5,1,38d28e09466f87e2"/>
-<approved hash="5,1,c8d17e0d4e6b8fe1"/>
 <approved hash="4,1,f4c91bc0c9af43c6"/>
 <approved hash="4,16,14a1ed06ec4a1455"/>
 <approved hash="4,16,c69c1b6e769c056c"/>
@@ -3368,9 +3376,29 @@ design rules under a new name.</description>
 <approved hash="4,16,1a26b84b63e62b81"/>
 <approved hash="4,16,3e5bd84b67e5278f"/>
 <approved hash="4,16,0f81a5206e1d2a45"/>
+<approved hash="4,16,f4c91bc0c9af43c6"/>
+<approved hash="4,1,118dc03e42feb94a"/>
+<approved hash="4,1,43b0360330c6e372"/>
+<approved hash="4,1,8dd8ec696ea91518"/>
+<approved hash="4,1,bfc72271dcb14f05"/>
+<approved hash="4,1,4534c48f2642edf6"/>
+<approved hash="4,1,f75cfa955455079c"/>
+<approved hash="4,1,c2e5305e3951d5d6"/>
+<approved hash="5,1,21dc69c29914b644"/>
+<approved hash="5,1,c13a7d6d6d6b5682"/>
+<approved hash="5,1,21dc69c69110be44"/>
+<approved hash="5,1,c13a7d69656f5e82"/>
+<approved hash="5,1,38d28e09466f87e2"/>
+<approved hash="5,1,c8d17e0d4e6b8fe1"/>
+<approved hash="4,16,118dc03e42feb94a"/>
+<approved hash="4,16,43b0360330c6e372"/>
+<approved hash="4,16,8dd8ec696ea91518"/>
+<approved hash="4,16,bfc72271dcb14f05"/>
+<approved hash="4,16,4534c48f2642edf6"/>
+<approved hash="4,16,f75cfa955455079c"/>
+<approved hash="4,16,c2e5305e3951d5d6"/>
 <approved hash="19,16,f126e552eaccfeb8"/>
 <approved hash="19,16,cee12695213ac94e"/>
-<approved hash="4,16,f4c91bc0c9af43c6"/>
 </errors>
 </board>
 </drawing>
