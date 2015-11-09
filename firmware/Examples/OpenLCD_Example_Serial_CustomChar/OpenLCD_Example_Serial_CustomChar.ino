@@ -55,8 +55,12 @@
  Ctrl+u / 21 / 0x15 - Change baud to 921600bps
  Ctrl+v / 22 / 0x16 - Change baud to 1000000bps
  Ctrl+w / 23 / 0x17 - Change baud to 1200bps
- Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+x with number 0 to 255. 114 (0x72) is default.
+ Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+y with number 0 to 255. 114 (0x72) is default.
  Ctrl+z / 26 / 0x1A - Enable/disable ignore RX pin on startup (ignore emergency reset)
+ Ctrl+[ / 27 / 0x1B - Record custom character to spot 0 (followed by 8 pixel bytes)
+        / 34 / 0x22 - Record custom character to spot 7 (followed by 8 pixel bytes)
+        / 35 / 0x23 - Display custom character at spot 0
+        / 43 / 0x2B - Display custom character at spot 7
  '-'    / 45 / 0x2D - Clear display. Move cursor to home position.
         / 128-157 / 0x80-0x9D - Set the primary backlight brightness. 128 = Off, 157 = 100%.
         / 158-187 / 0x9E-0xBB - Set the green backlight brightness. 158 = Off, 187 = 100%.
@@ -78,6 +82,7 @@ byte smiley[8] = {
   B10001,
   B01110,
   B00000,
+  B00000,
 };
 
 void setup()
@@ -91,17 +96,16 @@ void setup()
   OpenLCD.write('|'); //Send setting character
   OpenLCD.write('-'); //Send clear display character
 
-  OpenLCD.print("Test2:");
-  
-  OpenLCD.write(254); //Tell backpack to pass-through the next byte to the display
-  OpenLCD.write(0x40 + (8 * 0)); //Point at the location in CGRAM (starts at 0x40) that we want to record this data to
-  
-  while(1);
+  OpenLCD.print("Test:");
 
   //Load this custom character into location 2 in CGRAM 
   loadCustomCharacter(2, smiley);
 
-  //printCustomChar(2); //Print the custom char in location 2
+  //Loading custom characters causes the display to clear
+
+  OpenLCD.print("Custom:");
+  
+  printCustomChar(2); //Print the custom char in location 2
 }
 
 int lastReading = 0;
@@ -118,8 +122,8 @@ void printCustomChar(byte charNumber)
 {
   if(charNumber > 7) charNumber = 7; //Error correction
   
-  //OpenLCD.write(254); //Tell backpack to pass-through the next byte to the display
-  OpenLCD.write(charNumber); //Tell LCD to display custom char # 0-7
+  OpenLCD.write('|'); //Send setting character
+  OpenLCD.write(35 + charNumber); //Tell LCD to display custom char # 0-7
 }
 
 //Given a character number (0 to 7 is valid)
@@ -129,14 +133,10 @@ void loadCustomCharacter(byte charNumber, byte charData[])
 {
   if(charNumber > 7) charNumber = 7; //Error correction
   
-  OpenLCD.write(254); //Tell backpack to pass-through the next byte to the display
-  OpenLCD.write(0x40 + (8 * charNumber)); //Point at the location in CGRAM (starts at 0x40) that we want to record this data to
+  OpenLCD.write('|'); //Send setting character
+  OpenLCD.write(27 + charNumber); //27 is the first custom character spot
 
   for(byte x = 0 ; x < 8 ; x++) //There are 8 bytes of data we need to load
-  {
-    OpenLCD.write(254); //Tell backpack to pass-through the next byte to the display
     OpenLCD.write(charData[x]); //Write 8 bytes of graphic data to display
-  }
- 
 }
 

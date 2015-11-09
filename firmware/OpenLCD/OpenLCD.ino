@@ -60,11 +60,17 @@ LiquidCrystalFast SerLCD(LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7)
 byte characterCount = 0;
 char currentFrame[DISPLAY_BUFFER_SIZE]; //Max of 4 x 20 LCD
 
+byte customCharData[8]; //Records incoming custom character data
+byte customCharSpot = 0 ; //Keeps track of where we are in custCharData array
+byte customCharNumber = 0; //LCDs can store 8 custom chars, this keeps track
+
 bool modeCommand = false; //Used to indicate if a command byte has been received
 bool modeSetting = false; //Used to indicate if a setting byte has been received
 bool modeTWI = false; //First setting mode, then TWI change mode, then the value to change to
+bool modeRecordCustomChar = false; //First setting mode, then custom char mode, then record 8 bytes
 
-// Struct for circular data buffer data received over UART, SPI and I2C are all sent into a single buffer
+// Struct for circular data buffer
+// Data received over UART, SPI and I2C are all sent into a single buffer
 struct dataBuffer
 {
   unsigned char data[BUFFER_SIZE];  // THE data buffer
@@ -149,7 +155,7 @@ void updateDisplay()
   buffer.tail = (buffer.tail + 1) % BUFFER_SIZE;  // and update the tail to the next oldest
 
   //If the last byte received wasn't special
-  if (modeCommand == false && modeSetting == false && modeTWI == false)
+  if (modeCommand == false && modeSetting == false && modeTWI == false && modeRecordCustomChar == false)
   {
     //Check to see if the incoming byte is special
     if(incoming == SPECIAL_SETTING) modeSetting = true; //SPECIAL_SETTING is 127
@@ -247,6 +253,28 @@ void updateDisplay()
     {
       byte brightness = map(incoming, SPECIAL_BLUE_MIN, SPECIAL_BLUE_MIN+29, 0, 255); //Covert 30 digit value to 255 digits
       changeBLBrightness(BLUE, brightness);
+    }
+
+    //Record custom characters
+    else if(incoming >= 27 && incoming <= 34)
+    {
+      //User can record up to 8 custom chars
+      customCharNumber = incoming - 27; //Get the custom char spot to record to
+
+      modeRecordCustomChar = true; //Change to this special mode
+    }
+
+    //Display custom characters
+    else if(incoming >= 35 && incoming <= 43)
+    {
+      SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
+    }
+
+    //Debug
+    else
+    {
+      SerLCD.print("S:");
+      SerLCD.print(incoming, DEC); //Print this unknown setting
     }
    
     //TODO Do we need a command to move the cursor?
@@ -351,16 +379,38 @@ void updateDisplay()
     {
       //For debugging
       digitalWrite(BL_RW, HIGH); //Off
-      delay(250);
+      delay(50);
       digitalWrite(BL_RW, LOW); //ON
       
       //We ignore the command that could set LCD to 8bit mode
       //But otherwise give the user the ability to pass commands directly
-      //into the LCD. Creating custom characters is an example
-      SerLCD.write(incoming);
+      //into the LCD.
+      SerLCD.command(incoming);
     }
 
     modeCommand = false; //Clear flag
+  }
+  else if(modeRecordCustomChar == true)
+  {
+    //We get into this mode if the user has sent the correct setting or system command
+
+    customCharData[customCharSpot] = incoming; //Record this byte to the array
+    
+    customCharSpot++;
+    if(customCharSpot > 7)
+    {
+      //Once we have 8 bytes, stop listening
+      customCharSpot = 0; //Wrap variable at max of 7
+
+      SerLCD.createChar(customCharNumber, customCharData); //Record the array to CGRAM
+
+      //Possibly record this custom char to an EEPROM spot
+
+      //For some reason you need to re-init the LCD after a custom char is created
+      SerLCD.begin(settingLCDwidth, settingLCDlines); 
+
+      modeRecordCustomChar = false; //Exit this mode
+    }
   }
 
 }
