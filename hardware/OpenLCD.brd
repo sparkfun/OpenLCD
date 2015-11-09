@@ -2648,7 +2648,7 @@ These rules have been curated by SparkFuns DFM commitee. After doing much resear
 </element>
 <element name="SJ3" library="SparkFun-Passives" package="PAD-JUMPER-2-NO_YES_SILK" value="3.3V" x="5.08" y="8.89" rot="R180"/>
 <element name="SJ5" library="SparkFun-Passives" package="PAD-JUMPER-2-NO_YES_SILK" value="Size" x="15.24" y="12.065"/>
-<element name="U3" library="SparkFun-PowerIC" package="SOT23-5" value="ADJ" x="8.89" y="11.43" rot="R180">
+<element name="U3" library="SparkFun-PowerIC" package="SOT23-5" value="MIC5205-ADJ" x="8.89" y="11.43" rot="R180">
 <attribute name="PROD_ID" value="VREG-12594" x="8.89" y="11.43" size="1.27" layer="27" font="vector" ratio="15" rot="R180" display="off"/>
 </element>
 <element name="R4" library="SparkFun-Resistors" package="0603-RES" value="330" x="5.08" y="12.065" rot="R180">

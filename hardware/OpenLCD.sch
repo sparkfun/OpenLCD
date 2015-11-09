@@ -21052,7 +21052,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="SJ3" library="SparkFun-Passives" deviceset="JUMPER-PAD-2-NO" device="YES_SILK" value="3.3V"/>
 <part name="GND5" library="SparkFun" deviceset="GND" device=""/>
 <part name="SJ5" library="SparkFun-Passives" deviceset="JUMPER-PAD-2-NO" device="YES_SILK" value="Size"/>
-<part name="U3" library="SparkFun-PowerIC" deviceset="V_REG_MIC5205" device="ADJ" value="ADJ"/>
+<part name="U3" library="SparkFun-PowerIC" deviceset="V_REG_MIC5205" device="ADJ" value="MIC5205-ADJ"/>
 <part name="R4" library="SparkFun-Resistors" deviceset="330OHM1/10W1%(0603)" device="" value="330"/>
 <part name="R8" library="SparkFun-Resistors" deviceset="240OHM1/10W1%(0603)" device="" value="240"/>
 <part name="R9" library="SparkFun-Resistors" deviceset="390OHM1/10W1%(0603)" device="" value="390"/>
