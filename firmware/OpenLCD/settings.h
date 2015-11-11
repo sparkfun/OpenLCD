@@ -51,7 +51,8 @@ const byte DEFAULT_SPLASH = true; //Default on
 #define LOCATION_BLUE_BRIGHTNESS 7
 #define LOCATION_IGNORE_RX 8
 #define LOCATION_TWI_ADDRESS 9
-#define LOCATION_SPLASH_CONTENT 20
+#define LOCATION_SPLASH_CONTENT 20 //This is 4*20 or 80 bytes wide
+#define LOCATION_CUSTOM_CHARACTERS 100 //This is 8*8 or 64 bytes wide
 
 //Define the various commands
 #define SPECIAL_COMMAND 254 //0xFE: The command to do special HD77480 commands

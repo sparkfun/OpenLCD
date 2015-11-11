@@ -1,12 +1,12 @@
-/* 
+/*
  OpenLCD System Functions
 
  See main file for license and information.
 
  These are the ISRs for system functions that allow SerLCD to run
- 
+
  This is heavily based on the Serial 7 Segment firmware
- 
+
 */
 
 // SPI byte received interrupt routine
@@ -30,7 +30,7 @@ ISR(SPI_STC_vect)
 // But not quite: serialEvent is only called after each loop() interation
 void serialEvent()
 {
-  while (Serial.available()) 
+  while (Serial.available())
   {
     unsigned int i = (buffer.head + 1) % BUFFER_SIZE;  // read buffer head position and increment
     unsigned char c = Serial.read();  // Read data byte into c, from UART0 data register
@@ -48,7 +48,7 @@ void serialEvent()
 // Wire.onReceive(twiReceive); should be called
 void twiReceive(int rxCount)
 {
-  while(Wire.available())  // Do this while data is available in Wire buffer
+  while (Wire.available()) // Do this while data is available in Wire buffer
   {
     unsigned int i = (buffer.head + 1) % BUFFER_SIZE;  // read buffer head position and increment
     unsigned char c = Wire.read();  // Read data byte into c, from Wire data buffer
@@ -57,7 +57,7 @@ void twiReceive(int rxCount)
     {
       buffer.data[buffer.head] = c;  // Store the data into the buffer's head
       buffer.head = i;  // update buffer head, since we stored new data
-    }    
+    }
   }
 }
 
@@ -66,9 +66,9 @@ void twiReceive(int rxCount)
 void setupTimer()
 {
   // Timer 1 is se to CTC mode, 16-bit timer counts up to 0xFF
-  TCCR1B = (1<<WGM12) | (1<<CS10);
+  TCCR1B = (1 << WGM12) | (1 << CS10);
   OCR1A = 0x00FF;
-  TIMSK1 = (1<<OCIE1A);  // Enable interrupt on compare
+  TIMSK1 = (1 << OCIE1A); // Enable interrupt on compare
 }
 
 //This sets up the UART with the stored baud rate in EEPROM
@@ -76,15 +76,15 @@ void setupUART()
 {
   //Check to see if we are ignoring the RX reset or not
   byte settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
-  if(settingIgnoreRX > 1)
+  if (settingIgnoreRX > 1)
   {
     settingIgnoreRX = false; //Don't ignore
     EEPROM.write(LOCATION_IGNORE_RX, settingIgnoreRX);
   }
-    
-  if(settingIgnoreRX == false) //If we are NOT ignoring RX, then
+
+  if (settingIgnoreRX == false) //If we are NOT ignoring RX, then
     checkEmergencyReset(); //Look to see if the RX pin is being pulled low
-  
+
   //Read what the current UART speed is from EEPROM memory
   //Default is 9600
   settingUARTSpeed = EEPROM.read(LOCATION_BAUD);
@@ -106,7 +106,7 @@ void setupSPI()
   pinMode(SPI_MOSI, INPUT);
   pinMode(SPI_CS, INPUT); //There is a 10k pull up on the SS pin
 
-  SPCR = (1<<SPIE) | (1<<SPE);  // Enable SPI interrupt, enable SPI
+  SPCR = (1 << SPIE) | (1 << SPE); // Enable SPI interrupt, enable SPI
   // DORD = 0, LSB First
   // MSTR = 0, SLAVE
   // CPOL = 0, sck low when idle                  } MODE 0
@@ -121,9 +121,9 @@ void setupTWI()
 {
   unsigned char twiAddress;
 
-  twiAddress = EEPROM.read(LOCATION_TWI_ADDRESS);  // read the TWI address from 
+  twiAddress = EEPROM.read(LOCATION_TWI_ADDRESS);  // read the TWI address from
 
-  if ((twiAddress == 0) || (twiAddress > 0x7F))  
+  if ((twiAddress == 0) || (twiAddress > 0x7F))
   { // If the TWI address is invalid, use a default address
     twiAddress = DEFAULT_TWI_ADDRESS;
     EEPROM.write(LOCATION_TWI_ADDRESS, DEFAULT_TWI_ADDRESS);
@@ -150,12 +150,12 @@ void setupDisplay()
     settingLCDwidth = DEFAULT_WIDTH;
     EEPROM.write(LOCATION_WIDTH, settingLCDwidth);
   }
-  
-//TODO test this
+
+  //TODO test this
   //Check the display jumper
   //If the jumper is set, use it
   pinMode(SIZE_JUMPER, INPUT_PULLUP);
-  if(digitalRead(SIZE_JUMPER) == LOW)
+  if (digitalRead(SIZE_JUMPER) == LOW)
   {
     settingLCDlines = 4;
     settingLCDwidth = 20;
@@ -173,7 +173,7 @@ void setupBacklight()
   pinMode(BL_RW, OUTPUT);
   pinMode(BL_G, OUTPUT);
   pinMode(BL_B, OUTPUT);
-  
+
   //By default EEPROM is 255 or 100% brightness
   //Because it's PNP transistor we need to invert the logic (or subtract the user value from 255)
   analogWrite(BL_RW, 255 - EEPROM.read(LOCATION_RED_BRIGHTNESS));
@@ -186,18 +186,18 @@ void setupSplash()
 
   //Find out if we should display the splash or not
   settingSplashEnable = EEPROM.read(LOCATION_SPLASH_ONOFF);
-  if(settingSplashEnable > 1)
+  if (settingSplashEnable > 1)
   {
     settingSplashEnable = DEFAULT_SPLASH;
     EEPROM.write(LOCATION_SPLASH_ONOFF, settingSplashEnable);
   }
 
-  if(settingSplashEnable)
+  if (settingSplashEnable)
   {
     //Look up user content from memory
     byte content = EEPROM.read(LOCATION_SPLASH_CONTENT);
 
-    if(content == 0xFF)
+    if (content == 0xFF)
     {
       //Display the default splash screen
       //This should work with both 16 and 20 character displays
@@ -210,38 +210,38 @@ void setupSplash()
     else
     {
       //Pull splash content from EEPROM
-      
+
       //Copy the EEPROM to the character buffer
-      for(byte x = 0 ; x < settingLCDlines * settingLCDwidth ; x++)
+      for (byte x = 0 ; x < settingLCDlines * settingLCDwidth ; x++)
         currentFrame[x] = EEPROM.read(LOCATION_SPLASH_CONTENT + x);
-  
+
       //Now display the splash
       displayFrameBuffer();
     }
 
     //While we hold the splash screen monitor for incoming serial
     Serial.begin(9600); //During this period look for characters at 9600bps
-    for(byte x = 0 ; x < (SYSTEM_MESSAGE_DELAY/10) ; x++)
+    for (byte x = 0 ; x < (SYSTEM_MESSAGE_DELAY / 10) ; x++)
     {
       //Reverse compatiblity with SerLCD 2.5: a ctrl+r during splash will reset unit to 9600bps.
-      if(Serial.available())
+      if (Serial.available())
       {
-        if(Serial.read() == 18) //ctrl+r
+        if (Serial.read() == 18) //ctrl+r
         {
           //Reset baud rate
           SerLCD.clear();
           SerLCD.setCursor(0, 0); //First position, 1st row
-          
+
           SerLCD.print("Baud Reset");
-          
+
           EEPROM.write(LOCATION_BAUD, BAUD_9600);
 
           petSafeDelay(SYSTEM_MESSAGE_DELAY);
-          
+
           break;
         }
       } //This assumes that Serial.begin() will happen later
-      
+
       //serialEvent(); //Check the serial buffer for new data
       petSafeDelay(10); //Hang out looking for new characters
     }
@@ -251,10 +251,25 @@ void setupSplash()
 
     SerLCD.clear(); //Trash the splash
     SerLCD.setCursor(0, 0); //Reset cursor
-    
+
     //After this function we go back to system baud rate
   }
+}
 
+//Look up the 8 custom chars from EEPROM and push them to the LCD
+//We have to re-init the LCD after we send the chars
+void setupCustomChars()
+{
+  for(byte charNumber = 0 ; charNumber < 8 ; charNumber++)
+  {
+    for(byte charSpot = 0 ; charSpot < 8 ; charSpot++)
+      customCharData[charSpot] = EEPROM.read(LOCATION_CUSTOM_CHARACTERS + (charNumber * 8) + charSpot);
+    
+    SerLCD.createChar(charNumber, customCharData); //Record the array to CGRAM
+  }
+
+  //For some reason you need to re-init the LCD after a custom char is loaded
+  SerLCD.begin(settingLCDwidth, settingLCDlines);
 }
 
 //Check to see if we need an emergency UART reset
@@ -263,33 +278,33 @@ void setupSplash()
 void checkEmergencyReset(void)
 {
   byte rxPin = 0; //The RX pin is zero
-  
+
   pinMode(rxPin, INPUT_PULLUP); //Turn the RX pin into an input with pullups
 
-  if(digitalRead(rxPin) == HIGH) return; //Quick pin check
+  if (digitalRead(rxPin) == HIGH) return; //Quick pin check
 
   //Wait 2 seconds, blinking backlight while we wait
   pinMode(BL_RW, OUTPUT);
   digitalWrite(BL_RW, HIGH); //Set the STAT2 LED
-  for(byte i = 0 ; i < 80 ; i++)
+  for (byte i = 0 ; i < 80 ; i++)
   {
     wdt_reset(); //Pet the dog
     delay(25);
 
     //Blink backlight
-    if(digitalRead(BL_RW))
+    if (digitalRead(BL_RW))
       digitalWrite(BL_RW, LOW);
     else
       digitalWrite(BL_RW, HIGH);
 
-    if(digitalRead(rxPin) == HIGH) return; //Check to see if RX is not low anymore
-  }		
+    if (digitalRead(rxPin) == HIGH) return; //Check to see if RX is not low anymore
+  }
 
   //If we make it here, then RX pin stayed low the whole time
   //Reset all EEPROM locations to factory defaults.
-  for(int x = 0 ; x < 200 ; x++)
+  for (int x = 0 ; x < 200 ; x++)
     EEPROM.write(x, 0xFF);
-  
+
   SerLCD.clear();
   SerLCD.print("System reset");
   SerLCD.setCursor(0, 1); //First position, 2nd row
@@ -297,12 +312,12 @@ void checkEmergencyReset(void)
 
   //Now sit in forever loop indicating system is now at 9600bps
   digitalWrite(BL_RW, HIGH);
-  while(1)
+  while (1)
   {
     petSafeDelay(500);
 
     //Blink backlight
-    if(digitalRead(BL_RW))
+    if (digitalRead(BL_RW))
       digitalWrite(BL_RW, LOW);
     else
       digitalWrite(BL_RW, HIGH);
@@ -313,38 +328,38 @@ void checkEmergencyReset(void)
 //This function converts the byte to the actual baud rate
 long lookUpBaudRate(byte setting)
 {
-  switch(setting)
+  switch (setting)
   {
-    case BAUD_2400: return(2400);
-    case BAUD_4800: return(4800);
-    case BAUD_9600: return(9600);
-    case BAUD_14400: return(14400);
-    case BAUD_19200: return(19200);
-    case BAUD_38400: return(38400);
-    case BAUD_57600: return(57600);
-    case BAUD_115200: return(115200);
-    case BAUD_230400: return(230400);
-    case BAUD_460800: return(460800);
-    case BAUD_921600: return(921600);
-    case BAUD_1000000: return(1000000);
+    case BAUD_2400: return (2400);
+    case BAUD_4800: return (4800);
+    case BAUD_9600: return (9600);
+    case BAUD_14400: return (14400);
+    case BAUD_19200: return (19200);
+    case BAUD_38400: return (38400);
+    case BAUD_57600: return (57600);
+    case BAUD_115200: return (115200);
+    case BAUD_230400: return (230400);
+    case BAUD_460800: return (460800);
+    case BAUD_921600: return (921600);
+    case BAUD_1000000: return (1000000);
   }
- 
+
 }
 
 //Delays for a specified period that is pet safe
 void petSafeDelay(int delayAmount)
 {
   long startTime = millis();
-  
-  while(millis() - startTime < delayAmount)
+
+  while (millis() - startTime < delayAmount)
   {
     wdt_reset(); //Pet the dog
-    
+
     //Max 100ms delay
-    for(byte x = 0 ; x < 100 ; x++)
+    for (byte x = 0 ; x < 100 ; x++)
     {
       delay(1);
-      if( (millis() - startTime) >= delayAmount) break;
+      if ( (millis() - startTime) >= delayAmount) break;
     }
   }
 
