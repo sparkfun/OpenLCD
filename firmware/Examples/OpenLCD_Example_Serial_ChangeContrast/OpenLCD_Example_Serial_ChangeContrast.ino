@@ -9,7 +9,7 @@
  serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
  This is an updated serial LCD.
  
- This example shows how to change the backlight brightness. We assume the module is currently at default 9600bps.
+ This example shows how to change the contrast via software. We assume the module is currently at default 9600bps.
 
  We use software serial because if OpenLCD is attached to an Arduino's hardware serial port during bootloading 
  it can cause problems for both devices.
@@ -28,11 +28,6 @@
  VIN to 5V
  GND to GND
 
- Hook a trimpot up:
- Pin 1 - 5V
- Pin 2 - A0
- Pin 3 - GND
- 
  Command cheat sheet:
  ASCII / DEC / HEX
  '|'    / 124 / 0x7C - Put into setting mode
@@ -73,7 +68,7 @@
 
 SoftwareSerial OpenLCD(6, 7); //RX (not used), TX
 
-byte counter = 0;
+byte contrast = 0; //Will roll over at 255
 
 void setup()
 {
@@ -82,57 +77,25 @@ void setup()
   
   OpenLCD.begin(9600); //Begin communication with OpenLCD
 
-  //Send the reset command to the display - this forces the cursor to return to the beginning of the display
-  OpenLCD.write('|'); //Send setting character
-  OpenLCD.write('-'); //Send clear display character
-
-  pinMode(A0, INPUT);
+  //Turn on the backlight 100% so we can evaluate the contrast changes
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(128 + 29); //Set white/red backlight amount to 100%
+  //OpenLCD.write(128 + 0); //TODO Remove - used for defective prototype
 }
-
-int lastReading = 0;
-long startTime = 0;
-bool settingSent = false;
 
 void loop()
 {
-  int trimpot = averageAnalogRead(A0);
+  Serial.print("Contrast: ");
+  Serial.println(contrast);
   
-  //Only send new contrast setting to display if the user changes the trimpot
-  if(trimpot != lastReading)
-  {
-    lastReading = trimpot; //Update
-    
-    startTime = millis();
-    settingSent = false;
-  }
+  //Send contrast setting
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(24); //Send contrast command
+  OpenLCD.write(contrast);
 
-  //Wait at least 500ms for user to stop turning trimpot
-  //OpenLCD displays the contrast setting for around 2 seconds so we can't send constant updates
-  if(millis() - startTime > 500 && settingSent == false)
-  {  
-    trimpot = map(trimpot, 0, 1023, 0, 255); //Map this analog value down to 0-255
+  contrast += 5;
 
-    //Send contrast setting
-    OpenLCD.write('|'); //Put LCD into setting mode
-    OpenLCD.write(24); //Send contrast command
-    OpenLCD.write(trimpot);
-    
-    settingSent = true;
-  }
-  
-  delay(100); //Hang out for a bit
+  delay(1000); //Hang out for a bit
 }
 
-//Takes an average of readings on a given pin
-//Returns the average
-int averageAnalogRead(byte pinToRead)
-{
-  byte numberOfReadings = 8;
-  unsigned int runningValue = 0; 
 
-  for(int x = 0 ; x < numberOfReadings ; x++)
-    runningValue += analogRead(pinToRead);
-  runningValue /= numberOfReadings;
-
-  return(runningValue);  
-}

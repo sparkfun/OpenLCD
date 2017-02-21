@@ -35,7 +35,8 @@ void loop()
   OpenLCD.write('|'); //Setting character
   OpenLCD.write('-'); //Clear display
 
-  OpenLCD.print("Hello World!    Counter: ");
+  OpenLCD.print("Hello World!    Counter: "); //For 16x2 LCD
+  //OpenLCD.print("Hello World!        Counter: "); //For 20x4 LCD
   OpenLCD.print(counter++);
   
   delay(250); //Hang out for a bit

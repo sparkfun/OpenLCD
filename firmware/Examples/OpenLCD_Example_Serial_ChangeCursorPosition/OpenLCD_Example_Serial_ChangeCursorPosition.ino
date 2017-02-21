@@ -72,20 +72,21 @@
 
 SoftwareSerial OpenLCD(6, 7); //RX (not used), TX
 
-byte counter = 250;
+int counter = 250;
 
 void setup()
 {
   Serial.begin(9600); //Start serial communication at 9600 for debug statements
   Serial.println("OpenLCD Example Code");
   
-  OpenLCD.begin(9600); //Begin communication with OpenLCD
+  OpenLCD.begin(115200); //Begin communication with OpenLCD
 
   //Send the reset command to the display - this forces the cursor to return to the beginning of the display
   OpenLCD.write('|'); //Send setting character
   OpenLCD.write('-'); //Send clear display character
 
-  OpenLCD.print("Hello World!    Counter: ");
+  OpenLCD.print("Hello World!    Counter: "); //For 16x2 LCDs
+  //OpenLCD.print("Hello World!        Counter: "); //For 20x4 LCDs
 }
 
 void loop()
@@ -94,8 +95,7 @@ void loop()
   OpenLCD.write(128 + 64 + 9); //Change the position (128) of the cursor to 2nd row (64), position 9 (9)
 
   OpenLCD.print(counter++); //Re-print the counter
-  OpenLCD.print("  "); //When the counter wraps back to 0 it leaves artifacts on the display
+  //OpenLCD.print(" "); //When the counter wraps back to 0 it leaves artifacts on the display
   
-  //The delay is not needed because we can very quickly update the few bytes without flickering
-  //delay(50); //Hang out for a bit
+  delay(2); //Hang out for a bit if we are running at 115200bps
 }

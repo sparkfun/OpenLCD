@@ -1,52 +1,51 @@
 /*
-  OpenLCD is an LCD with serial/i2c/spi interfaces.
-  By: Nathan Seidle
-  SparkFun Electronics
-  Date: February 13th, 2015
-  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
+ OpenLCD is an LCD with serial/i2c/spi interfaces.
+ By: Nathan Seidle
+ SparkFun Electronics
+ Date: February 13th, 2015
+ License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD was the original
-  serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
-  This is an updated serial LCD.
+ OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD was the original
+ serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
+ This is an updated serial LCD.
 
-  Select 'SerLCD v2' as the board. We use an ATmega328P running at 11.0592MHz in order to have error free serial comm.
+ Select 'Arduino Pro or Pro Mini' as the board. Processor: 'ATmega328 (3.3V / 8MHz)'
 
-  Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
+ Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
 
-  Todo:
-  -Add software PWM to control blue backlight
-  Add ability to add custom characters
-  -Check for size jumper
-  Check how splash screen works on 16 vs 20 width displays
-  -Display message when resetting baud rate
-  -Display message when changing baud rate
-  -Add additional baud rates
-  -Document support for 1 line LCDs
-  -Add support for custom I2C addresses. This might be a third tier command in order to maintain backwards compatibility
-  -Can we shut down/sleep while we wait for incoming things? (not really)
-  -Add watchdog so that we never freeze/fail
-  -Create and document support for re_init command: 124 then 8. Does SerLCD v2 have a clear or reset everything command? It should. Document it.
-  -Emergency reset to 9600bps
-  -Add PWM software support for blue backlight control on pin 8
-  Test blue backlight control
-  Test WDT fail
-  -Test low level scrolling and cursor commands
-  -Test cursor move left/right, on edges
-  -Test emergency reset
-  -Current measurements
-  -Create docs for LCD manufacturer
-  -Create SPI examples
-  Establish and cut down on boot time
+ Todo:
+ Add ability to add custom characters
+ -Check for size jumper
+ Check how splash screen works on 16 vs 20 width displays
+ -Display message when resetting baud rate
+ -Display message when changing baud rate
+ -Add additional baud rates
+ -Document support for 1 line LCDs
+ -Add support for custom I2C addresses. This might be a third tier command in order to maintain backwards compatibility
+ Can we shut down/sleep while we wait for incoming things?
+ -Add watchdog so that we never freeze/fail
+ -Create and document support for re_init command: 124 then 8. Does SerLCD v2 have a clear or reset everything command? It should. Document it.
+ -Emergency reset to 9600bps
+ -Add PWM software support for blue backlight control on pin 8
+ Test blue backlight control
+ Test WDT fail
+ -Test low level scrolling and cursor commands
+ -Test cursor move left/right, on edges
+ -Test emergency reset
+ Current measurements
+ Create docs for LCD manufacturer
+ Create SPI examples
+ Establish and cut down on boot time
 
-  Tests:
-  -Change LCD width to 20, then back to 16 (124/3, then 124/4) then send 18 characters and check for wrap
-  -Enable/Disable splash screen, send 124 then 9 to toggle, then power cycle
-  -Change baud rate: 124/12 to go to 4800bps, power cycle, send characters at 4800
+ Tests:
+ -Change LCD width to 20, then back to 16 (124/3, then 124/4) then send 18 characters and check for wrap
+ -Enable/Disable splash screen, send 124 then 9 to toggle, then power cycle
+ -Change baud rate: 124/12 to go to 4800bps, power cycle, send characters at 4800
+ Make sure we can change contrast over I2C and then send data to screen over I2C
 
 */
 
 #include <Wire.h> //For I2C functions
-#include <SPI.h> //For SPI functions
 #include <LiquidCrystalFast.h> //Faster LCD commands. From PJRC https://www.pjrc.com/teensy/td_libs_LiquidCrystal.html
 #include <EEPROM.h>  //Brightness, Baud rate, and I2C address are stored in EEPROM
 #include "settings.h" //Defines EEPROM locations for user settings
@@ -54,15 +53,7 @@
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
 
-#include <SoftPWM.h> //Software PWM for Blue backlight: From https://code.google.com/p/rogue-code/wiki/SoftPWMLibraryDocumentation
-//SoftPWM uses Timer 2
-
 LiquidCrystalFast SerLCD(LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
-
-#define OLED 0
-#define LCD 1
-//#define DISPLAY_TYPE OLED
-#define DISPLAY_TYPE LCD
 
 byte characterCount = 0;
 char currentFrame[DISPLAY_BUFFER_SIZE]; //Max of 4 x 20 LCD
@@ -81,27 +72,27 @@ bool modeRecordCustomChar = false; //First setting mode, then custom char mode, 
 // Data received over UART, SPI and I2C are all sent into a single buffer
 struct dataBuffer
 {
-  byte data[BUFFER_SIZE];  // THE data buffer
-  volatile byte head;  // store new data at this index
-  volatile byte tail;  // read oldest data from this index
-} buffer;  // our data buffer is creatively named - buffer
+  unsigned char data[BUFFER_SIZE];  // THE data buffer
+  unsigned int head;  // store new data at this index
+  unsigned int tail;  // read oldest data from this index
+}
+buffer;  // our data buffer is creatively named - buffer
 
 void setup()
 {
-  wdt_reset(); //Pet the dog
-  wdt_disable(); //We don't want the watchdog during init
+  //wdt_reset(); //Pet the dog
+  //wdt_disable(); //We don't want the watchdog during init
 
   //During testing reset everything
   //for(int x = 0 ; x < 200 ; x++)
   //  EEPROM.write(x, 0xFF);
 
-  if (DISPLAY_TYPE == LCD) setupLCD(); //Initialize the LCD
-  else if (DISPLAY_TYPE == OLED) setupOLED(); //Initialize the OLED
-
-  setupContrast(); //Set contrast
-
+  //setupContrast(); //Set contrast
   setupBacklight(); //Turn on any backlights
 
+  delay(10); //The OLED at 3.3V seems to need some time before we init (5V works fine). 1 is too short, 10 works
+
+  setupDisplay(); //Initialize the LCD
   setupSplash(); //Read and display the user's splash screen
 
   setupCustomChars(); //Pre-load user's custom chars from EEPROM
@@ -109,13 +100,12 @@ void setup()
   setupUART(); //Setup serial, check for emergency reset after the splash is done
 
   setupSPI(); //Initialize SPI stuff (enable, mode, interrupts)
-
   setupTWI(); //Initialize I2C stuff (address, interrupt, enable)
-
+  
   setupPower(); //Power down peripherals that we won't be using
-
-  interrupts();  // Turn interrupts on, and let's go
-  wdt_enable(WDTO_250MS); //Unleash the beast
+  
+  //interrupts();  // Turn interrupts on, and les' go
+  //wdt_enable(WDTO_250MS); //Unleash the beast
 }
 
 void loop()
@@ -133,16 +123,16 @@ void loop()
   sleep_mode(); //Stop everything and go to sleep. Wake up if serial character received
 }
 
+
+
 // updateDisplay(): This beast of a function is called by the main loop
 // If the data relates to a commandMode or settingMode will be set accordingly or a command/setting
 // will be executed from this function.
 // If the incoming data is just a character it will be displayed
 void updateDisplay()
 {
-  wdt_reset(); //Pet the dog
-
   // First we read from the oldest data in the buffer
-  byte incoming = buffer.data[buffer.tail];
+  unsigned char incoming = buffer.data[buffer.tail];
   buffer.tail = (buffer.tail + 1) % BUFFER_SIZE;  // and update the tail to the next oldest
 
   //If the last byte received wasn't special
@@ -323,8 +313,8 @@ void updateDisplay()
     else if (incoming >> 4 == 1) //This is a scroll/shift command
     {
       /*See page 24/25 of the datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
-        Bit 3: (S/C) 1 = Display shift, 0 = cursor move
-        Bit 2: (R/L) 1 = Shift to right, 0 = shift left
+      Bit 3: (S/C) 1 = Display shift, 0 = cursor move
+      Bit 2: (R/L) 1 = Shift to right, 0 = shift left
       */
 
       //Check for display shift or cursor shift
@@ -354,12 +344,12 @@ void updateDisplay()
     {
       /*See page 24 of the datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
 
-        Bit 3: Always 1 (1<<3)
-        Bit 2: 1 = Display on, 0 = display off
-        Bit 1: 1 = Cursor displayed (an underline), 0 = cursor not displayed
-        Bit 0: 1 = Blinking box displayed, 0 = blinking box not displayed
+      Bit 3: Always 1 (1<<3)
+      Bit 2: 1 = Display on, 0 = display off
+      Bit 1: 1 = Cursor displayed (an underline), 0 = cursor not displayed
+      Bit 0: 1 = Blinking box displayed, 0 = blinking box not displayed
 
-        You can combine bits 1 and 2 to turn on the underline and then blink a box. */
+      You can combine bits 1 and 2 to turn on the underline and then blink a box. */
 
       //Check for blinking box cursor on/off
       if (incoming & 1 << 0) SerLCD.blink();
@@ -412,7 +402,7 @@ void updateDisplay()
   {
     //We get into this mode if the user has sent the ctrl+x (24) command to change contast
     changeContrast(incoming);
-    modeContrast = false; //Exit this mode
+    modeContrast = false; //Exit this mode    
   }
 
 }

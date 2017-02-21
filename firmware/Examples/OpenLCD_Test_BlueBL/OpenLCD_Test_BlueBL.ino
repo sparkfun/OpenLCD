@@ -1,21 +1,15 @@
 /*
- OpenLCD is an LCD with Serial/I2C/SPI interfaces.
+ OpenLCD is an LCD with serial/I2C/SPI interfaces.
  By: Nathan Seidle
  SparkFun Electronics
- Date: November 12th, 2015
+ Date: April 19th, 2015
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
  OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD was the original
  serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
  This is an updated serial LCD.
  
- This example shows how to create a custom character on the display.
- The smileyface graphic comes from SerLCD page on Arduino.cc: http://playground.arduino.cc/Code/SerLCDcreateChar
-
- Note: Loading custom characters causes the display to clear
-
- OpenLCD records custom characters to EEPROM so you only need to load it
- once, the LCD will remember the graphic after that.
+ This example shows how to change the backlight brightness. We assume the module is currently at default 9600bps.
 
  We use software serial because if OpenLCD is attached to an Arduino's hardware serial port during bootloading 
  it can cause problems for both devices.
@@ -33,7 +27,7 @@
  RX (OpenLCD) to Pin 7 (Arduino)
  VIN to 5V
  GND to GND
-
+ 
  Command cheat sheet:
  ASCII / DEC / HEX
  '|'    / 124 / 0x7C - Put into setting mode
@@ -58,12 +52,9 @@
  Ctrl+u / 21 / 0x15 - Change baud to 921600bps
  Ctrl+v / 22 / 0x16 - Change baud to 1000000bps
  Ctrl+w / 23 / 0x17 - Change baud to 1200bps
- Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+y with number 0 to 255. 114 (0x72) is default.
+ Ctrl+x / 24 / 0x18 - Change the contrast. Follow Ctrl+x with number 0 to 255. 120 is default.
+ Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+x with number 0 to 255. 114 (0x72) is default.
  Ctrl+z / 26 / 0x1A - Enable/disable ignore RX pin on startup (ignore emergency reset)
- Ctrl+[ / 27 / 0x1B - Record custom character to spot 0 (followed by 8 pixel bytes)
-        / 34 / 0x22 - Record custom character to spot 7 (followed by 8 pixel bytes)
-        / 35 / 0x23 - Display custom character at spot 0
-        / 43 / 0x2B - Display custom character at spot 7
  '-'    / 45 / 0x2D - Clear display. Move cursor to home position.
         / 128-157 / 0x80-0x9D - Set the primary backlight brightness. 128 = Off, 157 = 100%.
         / 158-187 / 0x9E-0xBB - Set the green backlight brightness. 158 = Off, 187 = 100%.
@@ -77,78 +68,46 @@
 
 SoftwareSerial OpenLCD(6, 7); //RX (not used), TX
 
-byte smiley[8] = {
-  B00000,
-  B10001,
-  B00000,
-  B00000,
-  B10001,
-  B01110,
-  B00000,
-  B00000,
-};
+byte counter = 0;
 
 void setup()
 {
-  Serial.begin(9600); //Start serial communication at 9600 for debug statements
-  Serial.println("OpenLCD Example Code");
+  Serial.begin(9600); //Begin local communication for debug statements
   
   OpenLCD.begin(9600); //Begin communication with OpenLCD
 
-  //Send the reset command to the display - this forces the cursor to return to the beginning of the display
-  OpenLCD.write('|'); //Send setting character
-  OpenLCD.write('-'); //Send clear display character
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(128 + 0); //Set red backlight amount to 0%
 
-  OpenLCD.print("Test:");
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(158 + 0); //Set green backlight amount to 0%
 
-  //Load this custom character into location 2 in CGRAM 
-  loadCustomCharacter(2, smiley);
-
-  //Loading custom characters causes the display to clear
-
-  OpenLCD.print(" Custom2:");
-  
-  printCustomChar(2); //Print the custom char in location 2
-
-  OpenLCD.write('|'); //Send setting character
-  OpenLCD.write('-'); //Send clear display character
-
-  for(int x = 0 ; x < 8 ; x++)
-  {
-    OpenLCD.print("C:");
-    printCustomChar(x);
-  }
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188 + 0); //Set blue backlight amount to 0%
 }
-
-int lastReading = 0;
-long startTime = 0;
-bool settingSent = false;
 
 void loop()
-{ 
-  //Do nothing  
-}
-
-//Display a given custom character that was previously loaded into CGRAM
-void printCustomChar(byte charNumber)
 {
-  if(charNumber > 7) charNumber = 7; //Error correction
+  //Control red backlight
+  Serial.println("Blue backlight set to 0%");
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188); //Set backlight amount to 0%
   
-  OpenLCD.write('|'); //Send setting character
-  OpenLCD.write(35 + charNumber); //Tell LCD to display custom char # 0-7
-}
+  delay(2000);
 
-//Given a character number (0 to 7 is valid)
-//Given an 8 byte array
-//Record this data as a custom character to CGRAM
-void loadCustomCharacter(byte charNumber, byte charData[])
-{
-  if(charNumber > 7) charNumber = 7; //Error correction
+  //Control red backlight
+  Serial.println("Blue backlight set to 51%");
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188 + 15); //Set white/red backlight amount to 51%
   
-  OpenLCD.write('|'); //Send setting character
-  OpenLCD.write(27 + charNumber); //27 is the first custom character spot
+  delay(2000);
 
-  for(byte x = 0 ; x < 8 ; x++) //There are 8 bytes of data we need to load
-    OpenLCD.write(charData[x]); //Write 8 bytes of graphic data to display
+  //Control red backlight
+  Serial.println("Blue backlight set to 100%");
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188 + 29); //Set white/red backlight amount to 100%
+  
+  delay(2000);
+ 
 }
 

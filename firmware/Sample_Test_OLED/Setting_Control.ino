@@ -1,7 +1,7 @@
 /*
-  OpenLCD control for changing settings
+ OpenLCD control for changing settings
 
-  See main file for license and information.
+ See main file for license and information.
 */
 
 //Toggle the ignore rx setting
@@ -40,16 +40,7 @@ void changeContrast(byte contrast)
   EEPROM.write(LOCATION_CONTRAST, contrast); //Store this new contrast
 
   //Go to this new contrast
-  if (DISPLAY_TYPE == LCD) analogWrite(LCD_CONTRAST, contrast);
-  else if (DISPLAY_TYPE == OLED)
-  {
-    SerLCD.command(0x2A); //Command: Function Set, set extension register (RE)
-    SerLCD.command(0x79); //Command: OLED Characterization, OLED command set is enabled
-    SerLCD.command(0x81); //Set Contrast Control
-    SerLCD.command(contrast); //Set Contrast Control: 0 to 255
-    SerLCD.command(0x78); //Command: OLED Characterization, OLED command set is disabled
-    SerLCD.command(0x28); //Command: Function Set, clear extension register (RE)
-  }
+  analogWrite(LCD_CONTRAST, contrast);
 
   //Display the new contrast
   SerLCD.clear();
@@ -64,7 +55,7 @@ void changeContrast(byte contrast)
 }
 
 //Change the I2C or TWI address
-void changeTWIAddress(byte newAddress)
+void changeTWIAddress(unsigned char newAddress)
 {
   //Record the new address
   EEPROM.write(LOCATION_TWI_ADDRESS, newAddress);
@@ -108,18 +99,20 @@ void changeBLBrightness(byte color, byte brightness)
   if (color == RED)
   {
     EEPROM.write(LOCATION_RED_BRIGHTNESS, brightness); //Record new setting
-    analogWrite(BL_RW, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    //analogWrite(BL_RW, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    analogWrite(BL_RW, brightness); 
   }
   else if (color == GREEN)
   {
     EEPROM.write(LOCATION_GREEN_BRIGHTNESS, brightness); //Record new setting
-    analogWrite(BL_G, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    //analogWrite(BL_G, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    analogWrite(BL_G, brightness); 
   }
   else if (color == BLUE)
   {
     EEPROM.write(LOCATION_BLUE_BRIGHTNESS, brightness); //Record new setting
     //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
-    SoftPWMSet(BL_B, 255 - brightness); //Controlled by software PWM
+    analogWrite(BL_B, brightness); 
   }
 
   //Display the backlight setting

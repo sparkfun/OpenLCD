@@ -1,4 +1,3 @@
-
 /*
  OpenLCD is an LCD with Serial/I2C/SPI interfaces.
  By: Nathan Seidle
@@ -6,8 +5,14 @@
  Date: April 19th, 2015
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
- This is example code that shows how to send data over I2C to the display.
-
+ OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD was the original
+ serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
+ This is an updated serial LCD.
+ 
+ This example shows how to change the position of the cursor. This is very important as this is the
+ fastest way to update the screen, ie - rather than clearing the display and re-transmitting a handful of bytes
+ a cursor move allows us to re-paint only what we need to update.
+ 
  Note: This code expects the display to be listening at the default I2C address. If your display is not at 0x72, you can
  do a hardware reset. Tie the RX pin to ground and power up OpenLCD. You should see the splash screen
  then "System reset Power cycle me" and the backlight will begin to blink. Now power down OpenLCD and remove
@@ -50,7 +55,7 @@
         / 128-157 / 0x80-0x9D - Set the primary backlight brightness. 128 = Off, 157 = 100%.
         / 158-187 / 0x9E-0xBB - Set the green backlight brightness. 158 = Off, 187 = 100%.
         / 188-217 / 0xBC-0xD9 - Set the blue backlight brightness. 188 = Off, 217 = 100%.
-
+ 
  For example, to change the baud rate to 115200 send 124 followed by 18.
 
 */
@@ -66,39 +71,31 @@ void setup()
   Wire.begin(); //Join the bus as master
 
   //By default .begin() will set I2C SCL to Standard Speed mode of 100kHz
-  //Wire.setClock(400000); //Optional - set I2C SCL to High Speed Mode of 400kHz
+  Wire.setClock(400000); //Optional - set I2C SCL to High Speed Mode of 400kHz
 
   Serial.begin(9600); //Start serial communication at 9600 for debug statements
   Serial.println("OpenLCD Example Code");
-
+  
   //Send the reset command to the display - this forces the cursor to return to the beginning of the display
   Wire.beginTransmission(DISPLAY_ADDRESS1);
   Wire.write('|'); //Put LCD into setting mode
   Wire.write('-'); //Send clear display command
+  Wire.print("Hello World!    Cycles: "); //For 16x2 LCDs
+  //Wire.print("Hello World!        Cycles: "); //For 20x4 LCDs
   Wire.endTransmission();
 }
 
 void loop()
 {
-  cycles++; //Counting cycles! Yay!
-  //  Serial.print("Cycle: "); //These serial.print statements take multiple miliseconds
-  //  Serial.println(cycles);
-
-  i2cSendValue(cycles); //Send the four characters to the display
-
-  delay(50); //The maximum update rate of OpenLCD is about 100Hz (10ms). A smaller delay will cause flicker
-}
-
-//Given a number, i2cSendValue chops up an integer into four values and sends them out over I2C
-void i2cSendValue(int value)
-{
   Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
 
-  Wire.write('|'); //Put LCD into setting mode
-  Wire.write('-'); //Send clear display command
+  Wire.write(254); //Send command character
+  Wire.write(128 + 64 + 8); //Change the position (128) of the cursor to 2nd row (64), position 8 (8)
 
-  Wire.print("Cycles: ");
-  Wire.print(value);
+  Wire.print(cycles++); //Re-print the counter
+  //Wire.print("  "); //When the counter wraps back to 0 it leaves artifacts on the display
 
   Wire.endTransmission(); //Stop I2C transmission
+
+  delay(2); //Hang out for a bit
 }

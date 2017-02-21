@@ -1,21 +1,7 @@
 //Hardware pin definitions
 
-//v2 Xiamen protos
+//For the SMD backpack
 #define LCD_RS A0
-#define LCD_RW A1
-#define LCD_EN A2
-#define LCD_D4 A3
-#define LCD_D5 2
-#define LCD_D6 7
-#define LCD_D7 4
-#define BL_RW 5 //PWM
-#define BL_G  6 //PWM
-#define BL_B  3 //Not PWM so we use SoftPWM
-#define SIZE_JUMPER 8
-#define LCD_CONTRAST 9 //PWM
-
-//These worked for v1 Xiamen protos
-/*#define LCD_RS A0
 #define LCD_RW A1
 #define LCD_EN A2
 #define LCD_D4 A3
@@ -24,12 +10,11 @@
 #define LCD_D7 4
 #define BL_RW 5 //PWM
 #define BL_G  6 //PWM
-#define BL_B  7
+#define BL_B  7 //PWM
 #define SIZE_JUMPER 8
 #define LCD_CONTRAST 9 //PWM
 //#define BL_B  9 //PWM
 //#define SIZE_JUMPER 7
-*/
 
 #define SPI_CS 10 //As a slave device CS pin must always be 10
 #define SPI_MOSI 11
@@ -57,8 +42,8 @@ const byte DEFAULT_BRIGHTNESS = 255;  //100%, full brightness
 const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on
-const byte DEFAULT_CONTRAST_LCD = 5;
-const byte DEFAULT_CONTRAST_OLED = 254;
+const byte DEFAULT_CONTRAST = 20; //Lower number, darker contrast. 20 works well on 16x2 single backlight
+const byte MCP4725_ADDR = 0x60; //I2C address for DAC on contrast pin
 
 //Internal EEPROM locations for the user settings
 #define LOCATION_BAUD 0
@@ -88,8 +73,8 @@ const byte DEFAULT_CONTRAST_OLED = 254;
 #define BLUE   1
 #define GREEN  2
 
-const byte BUFFER_SIZE = 128; //Number of characters we can hold in the incoming buffer
-const byte DISPLAY_BUFFER_SIZE = 4*20; //4x20 the max number of characters we will display at one time
+const byte BUFFER_SIZE = 64; //Number of characters we can hold in the incoming buffer
+const byte DISPLAY_BUFFER_SIZE = 80; //4x20 the max number of characters we will display at one time
 
 #define SYSTEM_MESSAGE_DELAY 500 //Amount of time (ms) we spend displaying splash and system messages
 

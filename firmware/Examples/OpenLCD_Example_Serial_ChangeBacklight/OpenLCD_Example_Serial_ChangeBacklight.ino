@@ -75,35 +75,49 @@ void setup()
   Serial.begin(9600); //Begin local communication for debug statements
   
   OpenLCD.begin(9600); //Begin communication with OpenLCD
+
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(158 + 0); //Set green backlight amount to 0%
+
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188 + 0); //Set blue backlight amount to 0%
 }
 
 void loop()
 {
   //Control red backlight
-  Serial.println("White/Red backlight set to 0%");
+  Serial.println("Mono/Red backlight set to 0%");
   OpenLCD.write('|'); //Put LCD into setting mode
   OpenLCD.write(128); //Set white/red backlight amount to 0%
   
   delay(2000);
 
   //Control red backlight
-  Serial.println("White/Red backlight set to 51%");
+  Serial.println("Mono/Red backlight set to 51%");
   OpenLCD.write('|'); //Put LCD into setting mode
   OpenLCD.write(128 + 15); //Set white/red backlight amount to 51%
   
   delay(2000);
 
   //Control red backlight
-  Serial.println("White/Red backlight set to 100%");
+  Serial.println("Mono/Red backlight set to 100%");
   OpenLCD.write('|'); //Put LCD into setting mode
   OpenLCD.write(128 + 29); //Set white/red backlight amount to 100%
   
   delay(2000);
   
+  //The following green and blue backlight control only apply if you have an RGB backlight enabled LCD
+
   //To control the green backlight:
-  //OpenLCD.write(158 + 29); //Set green backlight amount to 100%
+  
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(158 + 29); //Set green backlight amount to 100%
+  //OpenLCD.write(158 + 0); //Set green backlight amount to 0%
 
   //To control the blue backlight:
-  //OpenLCD.write(188 + 29); //Set blue backlight amount to 100%
+  OpenLCD.write('|'); //Put LCD into setting mode
+  OpenLCD.write(188 + 29); //Set blue backlight amount to 100%
+  //OpenLCD.write(188 + 0); //Set blue backlight amount to 0%
+  
 }
 

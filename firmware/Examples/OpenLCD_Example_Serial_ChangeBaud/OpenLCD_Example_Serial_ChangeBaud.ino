@@ -77,13 +77,15 @@ void setup()
   
   OpenLCD.begin(9600);
 
-  //Change baud rate to 115200
+  //Change baud rate
   OpenLCD.write('|'); //Setting character
+  //OpenLCD.write(17); //Change baud to 57600
   OpenLCD.write(18); //Change baud to 115200
   
   delay(2000); //Wait for 'Baud now: 115200' to clear
 
-  OpenLCD.begin(115200); //Start serial communication at 9600 for debug statements
+  //OpenLCD.begin(57600); //Start serial communication at this new speed
+  OpenLCD.begin(115200); //Start serial communication at this new speed
 }
 
 void loop()
@@ -92,7 +94,8 @@ void loop()
   OpenLCD.write('|'); //Setting character
   OpenLCD.write('-'); //Clear display
 
-  OpenLCD.print("Hello World!    Counter: ");
+  OpenLCD.print("Hello World!    Counter: "); //For 16x2 LCDs
+  //OpenLCD.print("Hello World!        Counter: "); //For 20x4 LCDs
   OpenLCD.print(counter++);
   
   //25ms works well
