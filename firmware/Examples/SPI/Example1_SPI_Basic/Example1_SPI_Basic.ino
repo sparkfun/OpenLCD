@@ -52,7 +52,7 @@
 
 #include <SPI.h>
 
-int csPin = 3; //You can use any output pin but for this example we use 10
+int csPin = 10; //You can use any output pin but for this example we use 10
 
 int cycles = 0;
 
@@ -63,7 +63,7 @@ void setup()
   
   SPI.begin(); //Start SPI communication
   //SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
-  SPI.setClockDivider(SPI_CLOCK_DIV64); //Slow down the master a bit
+  SPI.setClockDivider(SPI_CLOCK_DIV128); //Slow down the master a bit
 }
 
 void loop() 
