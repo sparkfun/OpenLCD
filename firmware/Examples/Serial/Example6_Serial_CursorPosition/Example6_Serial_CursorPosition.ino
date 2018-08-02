@@ -66,6 +66,54 @@
  
  For example, to change the baud rate to 115200 send 124 followed by 18.
 
+
+ *********************************************
+ *****************Cursor position cheat sheet:
+ *********************************************
+ 
+ For the most part, it is pretty straight forward on how to control the cursor.
+ Be warned though, the "line" numbers are a little strange (0, 64, 20, 84).
+ There are four "parts" to the two commands needed.
+
+ First, the command character (254), simply write this with:
+ 
+ OpenLCD.write(254);
+
+ Second, a single write that consists of adding up three important numbers.
+
+ OpenLCD.write(changePosition + line + position);
+
+ changePosition never changes (haha), it is the command for the serLCD to know we want to change position. It is always 128.
+
+ Then the "line" number is either 0, 64, 20 or 84.
+
+ These correspond to each line like so:
+
+ Line 1 = 0
+ Line 2 = 64
+ Line 3 = 20
+ Line 4 = 84
+
+ Then the "position" is a number from 0-15 or 0-19 (depending on which screen you are using).
+ 
+ For the 16x2 models, you will only need to set line 1 or line 2, so here's an example:
+
+ Jump to line 1, position 9
+ OpenLCD.write(254); //Send command character
+ OpenLCD.write(128 + 64 + 9); //Change the position (128) of the cursor to 2nd row (64), position 9 (9)
+
+ On a 20x4 model, you can try all four lines. For example:
+
+ Jump to line 3, position 4
+ OpenLCD.write(254); //Send command character
+ OpenLCD.write(128 + 20 + 4); //Change the position (128) of the cursor to 3rd row (20), position 4 (4)
+
+ And another 20x4 example:
+
+ Jump to line 4, position 18
+ OpenLCD.write(254); //Send command character
+ OpenLCD.write(128 + 84 + 18); //Change the position (128) of the cursor to 4th line (84), position 18 (18) 
+ 
 */
 
 #include <SoftwareSerial.h>
@@ -79,7 +127,7 @@ void setup()
   Serial.begin(9600); //Start serial communication at 9600 for debug statements
   Serial.println("OpenLCD Example Code");
   
-  OpenLCD.begin(115200); //Begin communication with OpenLCD
+  OpenLCD.begin(9600); //Begin communication with OpenLCD
 
   //Send the reset command to the display - this forces the cursor to return to the beginning of the display
   OpenLCD.write('|'); //Send setting character
