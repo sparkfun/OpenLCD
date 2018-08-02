@@ -21,10 +21,6 @@ Repository Contents
 * **/Firmware**
   * **/Examples
   * **/OpenLCD
-  * **/Original PIC Code
-  * **/Sample_Test
-  * **/Sample_Test_OLED
-* **/Hardware** - Eagle design files (.brd, .sch)
 
 Documentation
 --------------
