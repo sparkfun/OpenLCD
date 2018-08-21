@@ -262,8 +262,8 @@ void updateDisplay()
       modeRecordCustomChar = true; //Change to this special mode
     }
 
-    //Display custom characters
-    else if (incoming >= 35 && incoming <= 43)
+    //Display custom characters, 8 characters allowed, 35 to 42 inclusive
+    else if (incoming >= 35 && incoming <= 42)
     {
       SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
     }
