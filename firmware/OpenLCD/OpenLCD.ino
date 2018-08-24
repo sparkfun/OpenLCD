@@ -267,7 +267,14 @@ void updateDisplay()
     {
       SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
     }
+    //If we get a second special setting character, then write it to the display 
+    //This allows us to print a pipe by escaping it as a double 
+    else if (incoming == SPECIAL_SETTING) {
+      SerLCD.write(incoming);
 
+      currentFrame[characterCount++] = incoming; //Record this character to the display buffer
+      if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
+    }
     modeSetting = false;
   }
   else if (modeTWI == true)
