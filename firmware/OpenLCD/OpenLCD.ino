@@ -433,7 +433,7 @@ void updateDisplay()
   }
   else if (modeSetRGB == true)
   {
-    //We get into this mode if the user has sent the correct setting command
+    //We get into this mode if the user has sent the + (43) command to set the backlight rgb values
     rgbData[rgbSpot] = incoming; //Record this byte to the array
 
     rgbSpot++;

@@ -216,6 +216,7 @@ void loop()
   delay(2000);
 
   //Turn on all (white)
+  Serial.println("Setting RGB backlight to white");
   Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
   Wire.write('|'); //Put LCD into setting mode
   Wire.write('-'); //Send clear display command
@@ -229,6 +230,7 @@ void loop()
   delay(2000);
 
   //Set to Gray
+  Serial.println("Setting RGB backlight to gray");
   Wire.beginTransmission(DISPLAY_ADDRESS1); // transmit to device #1
   Wire.write('|'); //Put LCD into setting mode
   Wire.write('-'); //Send clear display command
