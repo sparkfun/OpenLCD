@@ -72,7 +72,7 @@ byte customCharSpot = 0 ; //Keeps track of where we are in custCharData array
 byte customCharNumber = 0; //LCDs can store 8 custom chars, this keeps track
 
 //New variables for Set RGB command
-byte rgbData[8]; //Records incoming backlight rgb data
+byte rgbData[3]; //Records incoming backlight rgb triplet
 byte rgbSpot = 0 ; //Keeps track of where we are in rgbData array
 
 bool modeCommand = false; //Used to indicate if a command byte has been received
