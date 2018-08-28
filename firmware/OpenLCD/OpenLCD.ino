@@ -71,11 +71,17 @@ byte customCharData[8]; //Records incoming custom character data
 byte customCharSpot = 0 ; //Keeps track of where we are in custCharData array
 byte customCharNumber = 0; //LCDs can store 8 custom chars, this keeps track
 
+//New variables for Set RGB command
+byte rgbData[3]; //Records incoming backlight rgb triplet
+byte rgbSpot = 0 ; //Keeps track of where we are in rgbData array
+
 bool modeCommand = false; //Used to indicate if a command byte has been received
 bool modeSetting = false; //Used to indicate if a setting byte has been received
 bool modeContrast = false; //First setting mode, then contrast change mode, then the value to change to
 bool modeTWI = false; //First setting mode, then TWI change mode, then the value to change to
 bool modeRecordCustomChar = false; //First setting mode, then custom char mode, then record 8 bytes
+//New command mode for Set RGB
+bool modeSetRGB = false; //First setting mode, then RGB mode, then get 3 bytes
 
 // Struct for circular data buffer
 // Data received over UART, SPI and I2C are all sent into a single buffer
@@ -146,8 +152,8 @@ void updateDisplay()
   buffer.tail = (buffer.tail + 1) % BUFFER_SIZE;  // and update the tail to the next oldest
 
   //If the last byte received wasn't special
-  if (modeCommand == false && modeSetting == false && modeContrast == false && modeTWI == false && modeRecordCustomChar == false)
-  {
+  if (modeCommand == false && modeSetting == false && modeContrast == false && modeTWI == false 
+        && modeRecordCustomChar == false && modeSetRGB == false)  {
     //Check to see if the incoming byte is special
     if (incoming == SPECIAL_SETTING) modeSetting = true; //SPECIAL_SETTING is 127
     else if (incoming == SPECIAL_COMMAND) modeCommand = true; //SPECIAL_COMMAND is 254
@@ -274,6 +280,10 @@ void updateDisplay()
 
       currentFrame[characterCount++] = incoming; //Record this character to the display buffer
       if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
+    }
+    //Set Backlight RGB in one command to eliminate flicker
+    else if (incoming == 43) {
+      modeSetRGB = true;
     }
     modeSetting = false;
   }
@@ -421,6 +431,20 @@ void updateDisplay()
     changeContrast(incoming);
     modeContrast = false; //Exit this mode
   }
+  else if (modeSetRGB == true)
+  {
+    //We get into this mode if the user has sent the + (43) command to set the backlight rgb values
+    rgbData[rgbSpot] = incoming; //Record this byte to the array
+
+    rgbSpot++;
+    if (rgbSpot > 2)
+    {
+    //Once we have 3 bytes, stop listening and change the backlight color
+    rgbSpot = 0;
+    changeBacklightRGB(rgbData[0], rgbData[1], rgbData[2]);
+    modeSetRGB = false; //Exit this mode
+    } //if (rgbSpot > 2)
+  } // else if modeSetRGB
 
 }
 
