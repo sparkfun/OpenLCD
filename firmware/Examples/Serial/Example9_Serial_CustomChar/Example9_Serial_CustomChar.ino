@@ -34,7 +34,7 @@
  VIN to 5V
  GND to GND
 
- Command cheat sheet:
+Command cheat sheet:
  ASCII / DEC / HEX
  '|'    / 124 / 0x7C - Put into setting mode
  Ctrl+c / 3 / 0x03 - Change width to 20
@@ -58,18 +58,16 @@
  Ctrl+u / 21 / 0x15 - Change baud to 921600bps
  Ctrl+v / 22 / 0x16 - Change baud to 1000000bps
  Ctrl+w / 23 / 0x17 - Change baud to 1200bps
- Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+y with number 0 to 255. 114 (0x72) is default.
+ Ctrl+x / 24 / 0x18 - Change the contrast. Follow Ctrl+x with number 0 to 255. 120 is default.
+ Ctrl+y / 25 / 0x19 - Change the TWI address. Follow Ctrl+x with number 0 to 255. 114 (0x72) is default.
  Ctrl+z / 26 / 0x1A - Enable/disable ignore RX pin on startup (ignore emergency reset)
- Ctrl+[ / 27 / 0x1B - Record custom character to spot 0 (followed by 8 pixel bytes)
-        / 34 / 0x22 - Record custom character to spot 7 (followed by 8 pixel bytes)
-        / 35 / 0x23 - Display custom character at spot 0
-        / 43 / 0x2B - Display custom character at spot 7
  '-'    / 45 / 0x2D - Clear display. Move cursor to home position.
         / 128-157 / 0x80-0x9D - Set the primary backlight brightness. 128 = Off, 157 = 100%.
         / 158-187 / 0x9E-0xBB - Set the green backlight brightness. 158 = Off, 187 = 100%.
         / 188-217 / 0xBC-0xD9 - Set the blue backlight brightness. 188 = Off, 217 = 100%.
- 
- For example, to change the baud rate to 115200 send 124 followed by 18.
+         For example, to change the baud rate to 115200 send 124 followed by 18.
+ '+'    / 43 / 0x2B - Set Backlight to RGB value, follow + by 3 numbers 0 to 255, for the r, g and b values.
+         For example, to change the backlight to yellow send + followed by 255, 255 and 0.
 
 */
 
