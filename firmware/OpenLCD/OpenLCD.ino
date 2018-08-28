@@ -14,35 +14,13 @@
   Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
 
   Todo:
-  -Add software PWM to control blue backlight
-  Add ability to add custom characters
-  -Check for size jumper
   Check how splash screen works on 16 vs 20 width displays
-  -Display message when resetting baud rate
-  -Display message when changing baud rate
-  -Add additional baud rates
-  -Document support for 1 line LCDs
-  -Add support for custom I2C addresses. This might be a third tier command in order to maintain backwards compatibility
-  -Can we shut down/sleep while we wait for incoming things? (not really)
-  -Add watchdog so that we never freeze/fail
-  -Create and document support for re_init command: 124 then 8. Does SerLCD v2 have a clear or reset everything command? It should. Document it.
-  -Emergency reset to 9600bps
-  -Add PWM software support for blue backlight control on pin 8
-  Test blue backlight control
-  Test WDT fail
-  -Test low level scrolling and cursor commands
-  -Test cursor move left/right, on edges
-  -Test emergency reset
-  -Current measurements
-  -Create docs for LCD manufacturer
-  -Create SPI examples
   Establish and cut down on boot time
 
   Tests:
   -Change LCD width to 20, then back to 16 (124/3, then 124/4) then send 18 characters and check for wrap
   -Enable/Disable splash screen, send 124 then 9 to toggle, then power cycle
   -Change baud rate: 124/12 to go to 4800bps, power cycle, send characters at 4800
-
 */
 
 #include <Wire.h> //For I2C functions
@@ -54,7 +32,7 @@
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
 
-#include <SoftPWM.h> //Software PWM for Blue backlight: From https://code.google.com/p/rogue-code/wiki/SoftPWMLibraryDocumentation
+#include <SoftPWM.h> //Software PWM for Blue backlight: From https://github.com/bhagman/SoftPWM
 //SoftPWM uses Timer 2
 
 LiquidCrystalFast SerLCD(LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
