@@ -143,6 +143,26 @@ void changeBLBrightness(byte color, byte brightness)
   displayFrameBuffer(); //Display what was there before
 }
 
+//Changes the brightness of all three backlight pins and updates the EEPROM locations
+//with their rgb values to eliminate flicker. Incoming brightness values should be 0 to 255
+void changeBacklightRGB(byte red, byte green, byte blue) {
+  //update red
+  EEPROM.write(LOCATION_RED_BRIGHTNESS, red); //Record new setting
+  analogWrite(BL_RW, 255 - red); //Controlled by PNP so reverse the brightness value
+  //update green
+  EEPROM.write(LOCATION_GREEN_BRIGHTNESS, green); //Record new setting
+  analogWrite(BL_G, 255 - green); //Controlled by PNP so reverse the brightness value
+  //update blue (SoftPWM)
+  EEPROM.write(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
+  //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
+  SoftPWMSet(BL_B, 255 - blue); //Controlled by software PWM
+
+  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+  displayFrameBuffer(); //Display what was there before
+}
+
+
 //Changes the baud rate setting
 //Assumes caller is passing a number 0 to 12
 void changeUARTSpeed(byte setting)

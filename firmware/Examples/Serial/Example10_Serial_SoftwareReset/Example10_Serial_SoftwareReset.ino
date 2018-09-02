@@ -32,7 +32,7 @@
  VIN to 5V
  GND to GND
 
- Command cheat sheet:
+Command cheat sheet:
  ASCII / DEC / HEX
  '|'    / 124 / 0x7C - Put into setting mode
  Ctrl+c / 3 / 0x03 - Change width to 20
@@ -63,8 +63,9 @@
         / 128-157 / 0x80-0x9D - Set the primary backlight brightness. 128 = Off, 157 = 100%.
         / 158-187 / 0x9E-0xBB - Set the green backlight brightness. 158 = Off, 187 = 100%.
         / 188-217 / 0xBC-0xD9 - Set the blue backlight brightness. 188 = Off, 217 = 100%.
- 
- For example, to change the baud rate to 115200 send 124 followed by 18.
+         For example, to change the baud rate to 115200 send 124 followed by 18.
+ '+'    / 43 / 0x2B - Set Backlight to RGB value, follow + by 3 numbers 0 to 255, for the r, g and b values.
+         For example, to change the backlight to yellow send + followed by 255, 255 and 0.
 
 */
 
