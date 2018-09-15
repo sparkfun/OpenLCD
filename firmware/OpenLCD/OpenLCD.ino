@@ -53,13 +53,16 @@ byte customCharNumber = 0; //LCDs can store 8 custom chars, this keeps track
 byte rgbData[3]; //Records incoming backlight rgb triplet
 byte rgbSpot = 0 ; //Keeps track of where we are in rgbData array
 
-bool modeCommand = false; //Used to indicate if a command byte has been received
-bool modeSetting = false; //Used to indicate if a setting byte has been received
-bool modeContrast = false; //First setting mode, then contrast change mode, then the value to change to
-bool modeTWI = false; //First setting mode, then TWI change mode, then the value to change to
-bool modeRecordCustomChar = false; //First setting mode, then custom char mode, then record 8 bytes
-//New command mode for Set RGB
-bool modeSetRGB = false; //First setting mode, then RGB mode, then get 3 bytes
+enum displayMode
+{
+  MODE_NORMAL, //No mode, just print
+  MODE_COMMAND, //Used to indicate if a command byte has been received
+  MODE_SETTING, //Used to indicate if a setting byte has been received
+  MODE_CONTRAST, //First setting mode, then contrast change mode, then the value to change to
+  MODE_TWI, //First setting mode, then custom char mode, then record 8 bytes
+  MODE_RECORD_CUSTOM_CHAR, //First setting mode, then custom char mode, then record 8 bytes
+  MODE_SET_RGB //First setting mode, then RGB mode, then get 3 bytes
+} currentMode = MODE_NORMAL;
 
 // Struct for circular data buffer
 // Data received over UART, SPI and I2C are all sent into a single buffer
@@ -130,11 +133,17 @@ void updateDisplay()
   buffer.tail = (buffer.tail + 1) % BUFFER_SIZE;  // and update the tail to the next oldest
 
   //If the last byte received wasn't special
-  if (modeCommand == false && modeSetting == false && modeContrast == false && modeTWI == false 
-        && modeRecordCustomChar == false && modeSetRGB == false)  {
+  if (currentMode == MODE_NORMAL)
+  {
     //Check to see if the incoming byte is special
-    if (incoming == SPECIAL_SETTING) modeSetting = true; //SPECIAL_SETTING is 127
-    else if (incoming == SPECIAL_COMMAND) modeCommand = true; //SPECIAL_COMMAND is 254
+    if (incoming == SPECIAL_SETTING) //SPECIAL_SETTING is 127
+    {
+      currentMode = MODE_SETTING;
+    }
+    else if (incoming == SPECIAL_COMMAND) //SPECIAL_COMMAND is 254
+    {
+      currentMode = MODE_COMMAND;
+    }
     else if (incoming == 8) //Backspace
     {
       if (characterCount == 0) characterCount = settingLCDwidth * settingLCDlines; //Special edge case
@@ -152,8 +161,9 @@ void updateDisplay()
       if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
     }
   }
-  else if (modeSetting == true)
+  else if (currentMode == MODE_SETTING)
   {
+    currentMode = MODE_NORMAL; //We assume we will be returning to normal
 
     //LCD width and line settings
     if (incoming >= 3 && incoming <= 7) //Ctrl+c to Ctrl+g
@@ -161,52 +171,44 @@ void updateDisplay()
       //Convert incoming value down to 0 to 4
       changeLinesWidths(incoming - 3);
     }
-
     //Software reset
     else if (incoming == 8) //Ctrl+h
     {
       while (1); //Hang out and let the watchdog punish us
     }
-
     //Enable / disable splash setting
     else if (incoming == 9) //Ctrl+i
     {
       changeSplashEnable();
     }
-
     //Save current buffer as splash
     else if (incoming == 10) //Ctrl+j
     {
       changeSplashContent();
     }
-
     //Set baud rate
     else if (incoming >= 11 && incoming <= 23) //Ctrl+k to ctrl+w
     {
       //Convert incoming value down to 0
       changeUARTSpeed(incoming - 11);
     }
-
     //Set contrast
     else if (incoming == 24) //Ctrl+x
     {
-      modeContrast = true;
+      currentMode = MODE_CONTRAST; //Go to new mode
       //We now grab the next character on the next loop and use it to change the contrast
     }
-
     //Set TWI address
     else if (incoming == 25) //Ctrl+y
     {
-      modeTWI = true;
+      currentMode = MODE_TWI; //Go to new mode
       //We now grab the next character on the next loop and use it to change the TWI address
     }
-
     //Control ignore RX on boot
     else if (incoming == 26) //Ctrl+z
     {
       changeIgnore();
     }
-
     //Clear screen and buffer
     else if (incoming == 45) //'-'
     {
@@ -215,35 +217,31 @@ void updateDisplay()
 
       clearFrameBuffer(); //Get rid of all characters in our buffer
     }
-
     //Backlight Red or standard white
     else if (incoming >= SPECIAL_RED_MIN && incoming <= (SPECIAL_RED_MIN + 29))
     {
       byte brightness = map(incoming, SPECIAL_RED_MIN, SPECIAL_RED_MIN + 29, 0, 255); //Covert 30 digit value to 255 digits
       changeBLBrightness(RED, brightness);
     }
-
     //Backlight Green
     else if (incoming >= SPECIAL_GREEN_MIN && incoming <= (SPECIAL_GREEN_MIN + 29))
     {
       byte brightness = map(incoming, SPECIAL_GREEN_MIN, SPECIAL_GREEN_MIN + 29, 0, 255); //Covert 30 digit value to 255 digits
       changeBLBrightness(GREEN, brightness);
     }
-
     //Backlight Blue
     else if (incoming >= SPECIAL_BLUE_MIN && incoming <= (SPECIAL_BLUE_MIN + 29))
     {
       byte brightness = map(incoming, SPECIAL_BLUE_MIN, SPECIAL_BLUE_MIN + 29, 0, 255); //Covert 30 digit value to 255 digits
       changeBLBrightness(BLUE, brightness);
     }
-
     //Record custom characters
     else if (incoming >= 27 && incoming <= 34)
     {
       //User can record up to 8 custom chars
       customCharNumber = incoming - 27; //Get the custom char spot to record to
 
-      modeRecordCustomChar = true; //Change to this special mode
+      currentMode = MODE_RECORD_CUSTOM_CHAR; //Change to this special mode
     }
 
     //Display custom characters, 8 characters allowed, 35 to 42 inclusive
@@ -251,8 +249,8 @@ void updateDisplay()
     {
       SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
     }
-    //If we get a second special setting character, then write it to the display 
-    //This allows us to print a pipe by escaping it as a double 
+    //If we get a second special setting character, then write it to the display
+    //This allows us to print a pipe by escaping it as a double
     else if (incoming == SPECIAL_SETTING) {
       SerLCD.write(incoming);
 
@@ -261,19 +259,20 @@ void updateDisplay()
     }
     //Set Backlight RGB in one command to eliminate flicker
     else if (incoming == 43) {
-      modeSetRGB = true;
+      currentMode = MODE_SET_RGB; //Go to new mode
     }
-    modeSetting = false;
   }
-  else if (modeTWI == true)
+  else if (currentMode == MODE_TWI)
   {
     //Custom TWI address
     changeTWIAddress(incoming);
 
-    modeTWI = false;
+    currentMode = MODE_NORMAL; //Return to normal operation
   }
-  else if (modeCommand == true) //Deal with lower level commands
+  else if (currentMode == MODE_COMMAND) //Deal with lower level commands
   {
+    currentMode = MODE_NORMAL; //In general, return to normal mode
+
     if (incoming >> 7 == 1) //This is a cursor position command
     {
       incoming &= 0x7F; //Get rid of the leading 1
@@ -303,7 +302,6 @@ void updateDisplay()
 
       SerLCD.setCursor(spot, line); //(x, y) - Set to X spot on the given line
     }
-
     else if (incoming >> 6 == 1) //This is Set CGRAM address command
     {
       //User is trying to create custom character
@@ -313,7 +311,7 @@ void updateDisplay()
       //User can record up to 8 custom chars
       customCharNumber = incoming - 27; //Get the custom char spot to record to
 
-      modeRecordCustomChar = true; //Change to this special mode
+      currentMode = MODE_RECORD_CUSTOM_CHAR; //modeRecordCustomChar = true; //Change to this special mode
     }
     else if (incoming >> 4 == 1) //This is a scroll/shift command
     {
@@ -344,7 +342,6 @@ void updateDisplay()
         SerLCD.setCursor(characterCount % settingLCDwidth, characterCount / settingLCDwidth); //Move the cursor
       }
     }
-
     else if (incoming >> 3 == 1) //This is a cursor or display on/off control command
     {
       /*See page 24 of the datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
@@ -368,7 +365,6 @@ void updateDisplay()
       if (incoming & 1 << 2) SerLCD.display();
       else SerLCD.noDisplay();
     }
-
     else if (incoming >> 4 != 0b00000011) //If not the data length (DL) command then send it to LCD
     {
       //We ignore the command that could set LCD to 8bit mode
@@ -376,10 +372,8 @@ void updateDisplay()
       //into the LCD.
       SerLCD.command(incoming);
     }
-
-    modeCommand = false; //Clear flag
   }
-  else if (modeRecordCustomChar == true)
+  else if (currentMode == MODE_RECORD_CUSTOM_CHAR)
   {
     //We get into this mode if the user has sent the correct setting or system command
 
@@ -400,16 +394,16 @@ void updateDisplay()
       //For some reason you need to re-init the LCD after a custom char is created
       SerLCD.begin(settingLCDwidth, settingLCDlines);
 
-      modeRecordCustomChar = false; //Exit this mode
+      currentMode = MODE_NORMAL; //Exit this mode
     }
   }
-  else if (modeContrast == true)
+  else if (currentMode == MODE_CONTRAST)
   {
     //We get into this mode if the user has sent the ctrl+x (24) command to change contast
     changeContrast(incoming);
-    modeContrast = false; //Exit this mode
+    currentMode = MODE_NORMAL; //Exit this mode
   }
-  else if (modeSetRGB == true)
+  else if (currentMode == MODE_SET_RGB)
   {
     //We get into this mode if the user has sent the + (43) command to set the backlight rgb values
     rgbData[rgbSpot] = incoming; //Record this byte to the array
@@ -417,10 +411,10 @@ void updateDisplay()
     rgbSpot++;
     if (rgbSpot > 2)
     {
-    //Once we have 3 bytes, stop listening and change the backlight color
-    rgbSpot = 0;
-    changeBacklightRGB(rgbData[0], rgbData[1], rgbData[2]);
-    modeSetRGB = false; //Exit this mode
+      //Once we have 3 bytes, stop listening and change the backlight color
+      rgbSpot = 0;
+      changeBacklightRGB(rgbData[0], rgbData[1], rgbData[2]);
+      currentMode = MODE_NORMAL; //Exit this mode
     } //if (rgbSpot > 2)
   } // else if modeSetRGB
 
