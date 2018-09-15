@@ -40,16 +40,7 @@ void changeContrast(byte contrast)
   EEPROM.write(LOCATION_CONTRAST, contrast); //Store this new contrast
 
   //Go to this new contrast
-  if (DISPLAY_TYPE == LCD) analogWrite(LCD_CONTRAST, contrast);
-  else if (DISPLAY_TYPE == OLED)
-  {
-    SerLCD.command(0x2A); //Command: Function Set, set extension register (RE)
-    SerLCD.command(0x79); //Command: OLED Characterization, OLED command set is enabled
-    SerLCD.command(0x81); //Set Contrast Control
-    SerLCD.command(contrast); //Set Contrast Control: 0 to 255
-    SerLCD.command(0x78); //Command: OLED Characterization, OLED command set is disabled
-    SerLCD.command(0x28); //Command: Function Set, clear extension register (RE)
-  }
+  analogWrite(LCD_CONTRAST, contrast);
 
   //Display the new contrast
   SerLCD.clear();

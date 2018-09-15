@@ -58,7 +58,6 @@ const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on
 const byte DEFAULT_CONTRAST_LCD = 5;
-const byte DEFAULT_CONTRAST_OLED = 254;
 
 //Internal EEPROM locations for the user settings
 #define LOCATION_BAUD 0

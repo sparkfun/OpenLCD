@@ -23,6 +23,10 @@
   -Change baud rate: 124/12 to go to 4800bps, power cycle, send characters at 4800
 */
 
+//Firmware version. This is sent when requested. Helpful for tech support.
+const byte firmwareVersionMajor = 1;
+const byte firmwareVersionMinor = 1;
+
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
 #include <LiquidCrystalFast.h> //Faster LCD commands. From PJRC https://www.pjrc.com/teensy/td_libs_LiquidCrystal.html
@@ -36,11 +40,6 @@
 //SoftPWM uses Timer 2
 
 LiquidCrystalFast SerLCD(LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
-
-#define OLED 0
-#define LCD 1
-//#define DISPLAY_TYPE OLED
-#define DISPLAY_TYPE LCD
 
 byte characterCount = 0;
 char currentFrame[DISPLAY_BUFFER_SIZE]; //Max of 4 x 20 LCD
@@ -82,8 +81,7 @@ void setup()
   //for(int x = 0 ; x < 200 ; x++)
   //  EEPROM.write(x, 0xFF);
 
-  if (DISPLAY_TYPE == LCD) setupLCD(); //Initialize the LCD
-  else if (DISPLAY_TYPE == OLED) setupOLED(); //Initialize the OLED
+  setupLCD(); //Initialize the LCD
 
   setupContrast(); //Set contrast
 
