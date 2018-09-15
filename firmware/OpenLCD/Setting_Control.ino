@@ -156,9 +156,11 @@ void changeBacklightRGB(byte red, byte green, byte blue) {
   //update red
   EEPROM.write(LOCATION_RED_BRIGHTNESS, red); //Record new setting
   analogWrite(BL_RW, 255 - red); //Controlled by PNP so reverse the brightness value
+
   //update green
   EEPROM.write(LOCATION_GREEN_BRIGHTNESS, green); //Record new setting
   analogWrite(BL_G, 255 - green); //Controlled by PNP so reverse the brightness value
+
   //update blue (SoftPWM)
   EEPROM.write(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
   //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value

@@ -238,11 +238,11 @@ void setupSplash()
       SerLCD.setCursor(0, 0); //First position, 1st row
       SerLCD.print(F("SparkFun OpenLCD"));
       SerLCD.setCursor(0, 1); //First position, 2nd row
-      SerLCD.print(F("v"));
+      SerLCD.print(F("Baud: "));
+      SerLCD.print(F(" v"));
       SerLCD.print(firmwareVersionMajor);
       SerLCD.print(F("."));
       SerLCD.print(firmwareVersionMinor);
-      SerLCD.print(F(" Baud: "));
 
       //Read what the current UART speed is from EEPROM memory
       //Default is 9600
