@@ -16,11 +16,6 @@
   Todo:
   Check how splash screen works on 16 vs 20 width displays
   Establish and cut down on boot time
-
-  Tests:
-  -Change LCD width to 20, then back to 16 (124/3, then 124/4) then send 18 characters and check for wrap
-  -Enable/Disable splash screen, send 124 then 9 to toggle, then power cycle
-  -Change baud rate: 124/12 to go to 4800bps, power cycle, send characters at 4800
 */
 
 //Firmware version. This is sent when requested. Helpful for tech support.
@@ -207,8 +202,16 @@ void updateDisplay()
     {
       changeIgnore();
     }
+    //Set Backlight RGB in one command to eliminate flicker
+    else if (incoming == '+') {
+      currentMode = MODE_SET_RGB; //Go to new mode
+    }
+    //Display current firmware version
+    else if (incoming == '\'') {
+      displayFirmwareVersion();
+    }
     //Clear screen and buffer
-    else if (incoming == 45) //'-'
+    else if (incoming == '-')
     {
       SerLCD.clear();
       SerLCD.setCursor(0, 0);
@@ -254,10 +257,6 @@ void updateDisplay()
 
       currentFrame[characterCount++] = incoming; //Record this character to the display buffer
       if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
-    }
-    //Set Backlight RGB in one command to eliminate flicker
-    else if (incoming == 43) {
-      currentMode = MODE_SET_RGB; //Go to new mode
     }
   }
   else if (currentMode == MODE_TWI)

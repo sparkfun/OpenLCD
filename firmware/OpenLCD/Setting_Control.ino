@@ -25,10 +25,26 @@ void changeIgnore()
     settingIgnoreRX = true;
     SerLCD.print(F("N"));
   }
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
-
   //Record this new setting
   EEPROM.write(LOCATION_IGNORE_RX, settingIgnoreRX);
+
+  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+  displayFrameBuffer(); //Return the contents of the display
+}
+
+//Display the current firmware version for a set amount of time
+void displayFirmwareVersion()
+{
+  SerLCD.clear();
+  SerLCD.setCursor(0, 0);
+
+  SerLCD.print(F("Firmware v"));
+  SerLCD.print(firmwareVersionMajor);
+  SerLCD.print(F("."));
+  SerLCD.print(firmwareVersionMinor);
+
+  petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
   displayFrameBuffer(); //Return the contents of the display
 }
@@ -147,12 +163,7 @@ void changeBacklightRGB(byte red, byte green, byte blue) {
   EEPROM.write(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
   //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
   SoftPWMSet(BL_B, 255 - blue); //Controlled by software PWM
-
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
-
-  displayFrameBuffer(); //Display what was there before
 }
-
 
 //Changes the baud rate setting
 //Assumes caller is passing a number 0 to 12

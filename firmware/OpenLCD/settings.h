@@ -1,6 +1,5 @@
 //Hardware pin definitions
 
-//v2 Xiamen protos
 #define LCD_RS A0
 #define LCD_RW A1
 #define LCD_EN A2
