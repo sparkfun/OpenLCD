@@ -14,23 +14,6 @@
 #define SIZE_JUMPER 8
 #define LCD_CONTRAST 9 //PWM
 
-//These worked for v1 Xiamen protos
-/*#define LCD_RS A0
-#define LCD_RW A1
-#define LCD_EN A2
-#define LCD_D4 A3
-#define LCD_D5 2
-#define LCD_D6 3
-#define LCD_D7 4
-#define BL_RW 5 //PWM
-#define BL_G  6 //PWM
-#define BL_B  7
-#define SIZE_JUMPER 8
-#define LCD_CONTRAST 9 //PWM
-//#define BL_B  9 //PWM
-//#define SIZE_JUMPER 7
-*/
-
 #define SPI_CS 10 //As a slave device CS pin must always be 10
 #define SPI_MOSI 11
 #define SPI_MISO 12
