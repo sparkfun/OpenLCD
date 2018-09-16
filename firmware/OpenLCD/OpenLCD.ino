@@ -53,7 +53,7 @@ enum displayMode
   MODE_COMMAND, //Used to indicate if a command byte has been received
   MODE_SETTING, //Used to indicate if a setting byte has been received
   MODE_CONTRAST, //First setting mode, then contrast change mode, then the value to change to
-  MODE_TWI, //First setting mode, then custom char mode, then record 8 bytes
+  MODE_TWI, //First setting mode, then I2C mode, then change I2C address
   MODE_RECORD_CUSTOM_CHAR, //First setting mode, then custom char mode, then record 8 bytes
   MODE_SET_RGB //First setting mode, then RGB mode, then get 3 bytes
 } currentMode = MODE_NORMAL;
@@ -202,22 +202,50 @@ void updateDisplay()
     {
       changeIgnore();
     }
+    //Record custom characters
+    else if (incoming >= 27 && incoming <= 34)
+    {
+      //User can record up to 8 custom chars
+      customCharNumber = incoming - 27; //Get the custom char spot to record to
+
+      currentMode = MODE_RECORD_CUSTOM_CHAR; //Change to this special mode
+    }
+
+    //Display custom characters, 8 characters allowed, 35 to 42 inclusive
+    else if (incoming >= 35 && incoming <= 42)
+    {
+      SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
+    }
     //Set Backlight RGB in one command to eliminate flicker
-    else if (incoming == '+') {
+    else if (incoming == 43) //+ character
+    {
       currentMode = MODE_SET_RGB; //Go to new mode
     }
     //Display current firmware version
-    else if (incoming == '\'') {
+    else if (incoming == 44) //, character
+    {
       displayFirmwareVersion();
     }
     //Clear screen and buffer
-    else if (incoming == '-')
+    else if (incoming == 45) //- character
     {
       SerLCD.clear();
       SerLCD.setCursor(0, 0);
 
       clearFrameBuffer(); //Get rid of all characters in our buffer
     }
+    //If we get a second special setting character, then write it to the display
+    //This allows us to print a pipe by escaping it as a double
+    else if (incoming == 124) //| character
+    {
+      SerLCD.write(incoming);
+
+      currentFrame[characterCount++] = incoming; //Record this character to the display buffer
+      if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
+    }
+
+    //The following commands start at integer value 128
+    
     //Backlight Red or standard white
     else if (incoming >= SPECIAL_RED_MIN && incoming <= (SPECIAL_RED_MIN + 29))
     {
@@ -235,28 +263,6 @@ void updateDisplay()
     {
       byte brightness = map(incoming, SPECIAL_BLUE_MIN, SPECIAL_BLUE_MIN + 29, 0, 255); //Covert 30 digit value to 255 digits
       changeBLBrightness(BLUE, brightness);
-    }
-    //Record custom characters
-    else if (incoming >= 27 && incoming <= 34)
-    {
-      //User can record up to 8 custom chars
-      customCharNumber = incoming - 27; //Get the custom char spot to record to
-
-      currentMode = MODE_RECORD_CUSTOM_CHAR; //Change to this special mode
-    }
-
-    //Display custom characters, 8 characters allowed, 35 to 42 inclusive
-    else if (incoming >= 35 && incoming <= 42)
-    {
-      SerLCD.write(byte(incoming - 35)); //You write location zero to display customer char 0
-    }
-    //If we get a second special setting character, then write it to the display
-    //This allows us to print a pipe by escaping it as a double
-    else if (incoming == SPECIAL_SETTING) {
-      SerLCD.write(incoming);
-
-      currentFrame[characterCount++] = incoming; //Record this character to the display buffer
-      if (characterCount == settingLCDwidth * settingLCDlines) characterCount = 0; //Wrap condition
     }
   }
   else if (currentMode == MODE_TWI)
