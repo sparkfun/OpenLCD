@@ -19,8 +19,8 @@ These AVR-based Serial Enabled LCDs are based on the HD44780 controller, and inc
 Repository Contents
 -------------------
 * **/Firmware**
-  * **/Examples
-  * **/OpenLCD
+  * **/Examples**
+  * **/OpenLCD**
 
 Documentation
 --------------
