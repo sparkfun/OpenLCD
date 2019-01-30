@@ -91,7 +91,7 @@ void setupUART()
   if (settingIgnoreRX > 1)
   {
     settingIgnoreRX = false; //Don't ignore
-    EEPROM.write(LOCATION_IGNORE_RX, settingIgnoreRX);
+    EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
   }
 
   if (settingIgnoreRX == false) //If we are NOT ignoring RX, then
@@ -103,7 +103,7 @@ void setupUART()
   if (settingUARTSpeed > BAUD_1000000) //Check to see if the baud rate has ever been set
   {
     settingUARTSpeed = DEFAULT_BAUD; //Reset UART to 9600 if there is no baud rate stored
-    EEPROM.write(LOCATION_BAUD, settingUARTSpeed);
+    EEPROM.update(LOCATION_BAUD, settingUARTSpeed);
   }
 
   //Initialize the UART
@@ -139,7 +139,7 @@ void setupTWI()
   if ((twiAddress == 0) || (twiAddress > 0x7F))
   { // If the TWI address is invalid, use a default address
     twiAddress = DEFAULT_TWI_ADDRESS;
-    EEPROM.write(LOCATION_TWI_ADDRESS, DEFAULT_TWI_ADDRESS);
+    EEPROM.update(LOCATION_TWI_ADDRESS, DEFAULT_TWI_ADDRESS);
   }
 
   Wire.begin(twiAddress);  //Initialize Wire library as slave at twiAddress address
@@ -154,7 +154,7 @@ void setupContrast()
   if (settingContrast == 255) //Check to see if the contrast has ever been set
   {
     settingContrast = DEFAULT_CONTRAST_LCD; //Default
-    EEPROM.write(LOCATION_CONTRAST, settingContrast);
+    EEPROM.update(LOCATION_CONTRAST, settingContrast);
   }
 
   //Change contrast without notification message
@@ -171,14 +171,14 @@ void setupLCD()
   if (settingLCDlines > 4)
   {
     settingLCDlines = DEFAULT_LINES;
-    EEPROM.write(LOCATION_LINES, settingLCDlines);
+    EEPROM.update(LOCATION_LINES, settingLCDlines);
   }
 
   settingLCDwidth = EEPROM.read(LOCATION_WIDTH);
   if (settingLCDwidth > 20)
   {
     settingLCDwidth = DEFAULT_WIDTH;
-    EEPROM.write(LOCATION_WIDTH, settingLCDwidth);
+    EEPROM.update(LOCATION_WIDTH, settingLCDwidth);
   }
 
   //Check the display jumper
@@ -222,7 +222,7 @@ void setupSplash()
   if (settingSplashEnable > 1)
   {
     settingSplashEnable = DEFAULT_SPLASH;
-    EEPROM.write(LOCATION_SPLASH_ONOFF, settingSplashEnable);
+    EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
   }
 
   if (settingSplashEnable)
@@ -246,7 +246,7 @@ void setupSplash()
       if (settingUARTSpeed > BAUD_1000000) //Check to see if the baud rate has ever been set
       {
         settingUARTSpeed = DEFAULT_BAUD; //Reset UART to 9600 if there is no baud rate stored
-        EEPROM.write(LOCATION_BAUD, settingUARTSpeed);
+        EEPROM.update(LOCATION_BAUD, settingUARTSpeed);
       }
 
       SerLCD.print(lookUpBaudRate(settingUARTSpeed));
@@ -284,7 +284,7 @@ void setupSplash()
 
           SerLCD.print("Baud Reset");
 
-          EEPROM.write(LOCATION_BAUD, BAUD_9600);
+          EEPROM.update(LOCATION_BAUD, BAUD_9600);
 
           petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
@@ -352,9 +352,7 @@ void checkEmergencyReset(void)
 
   //If we make it here, then RX pin stayed low the whole time
   //Reset all EEPROM locations to factory defaults.
-  for (int x = 0 ; x < 200 ; x++)
-    EEPROM.write(x, 0xFF);
-
+  for (int x = 0 ; x < 200 ; x++) EEPROM.update(x, 0xFF);
 
   //Change contrast without notification message
   analogWrite(LCD_CONTRAST, 40); //Set contrast to default

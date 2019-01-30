@@ -392,7 +392,7 @@ void updateDisplay()
 
       //Record this custom char to EEPROM
       for (byte charSpot = 0 ; charSpot < 8 ; charSpot++)
-        EEPROM.write(LOCATION_CUSTOM_CHARACTERS + (customCharNumber * 8) + charSpot, customCharData[charSpot]); //addr, val
+        EEPROM.update(LOCATION_CUSTOM_CHARACTERS + (customCharNumber * 8) + charSpot, customCharData[charSpot]); //addr, val
 
       //For some reason you need to re-init the LCD after a custom char is created
       SerLCD.begin(settingLCDwidth, settingLCDlines);
