@@ -26,7 +26,7 @@ void changeIgnore()
     SerLCD.print(F("N"));
   }
   //Record this new setting
-  EEPROM.write(LOCATION_IGNORE_RX, settingIgnoreRX);
+  EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
 
   petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
@@ -53,7 +53,7 @@ void displayFirmwareVersion()
 //Press a or z to adjust, x to exit
 void changeContrast(byte contrast)
 {
-  EEPROM.write(LOCATION_CONTRAST, contrast); //Store this new contrast
+  EEPROM.update(LOCATION_CONTRAST, contrast); //Store this new contrast
 
   //Go to this new contrast
   analogWrite(LCD_CONTRAST, contrast);
@@ -74,7 +74,7 @@ void changeContrast(byte contrast)
 void changeTWIAddress(byte newAddress)
 {
   //Record the new address
-  EEPROM.write(LOCATION_TWI_ADDRESS, newAddress);
+  EEPROM.update(LOCATION_TWI_ADDRESS, newAddress);
 
   setupTWI(); //Leverage the regular startup function
 
@@ -95,7 +95,7 @@ void changeSplashContent()
 {
   //Record the current frame to EEPROM
   for (byte x = 0 ; x < settingLCDlines * settingLCDwidth ; x++)
-    EEPROM.write(LOCATION_SPLASH_CONTENT + x, currentFrame[x]);
+    EEPROM.update(LOCATION_SPLASH_CONTENT + x, currentFrame[x]);
 
   //Display the backlight setting
   SerLCD.clear();
@@ -114,17 +114,17 @@ void changeBLBrightness(byte color, byte brightness)
 {
   if (color == RED)
   {
-    EEPROM.write(LOCATION_RED_BRIGHTNESS, brightness); //Record new setting
+    EEPROM.update(LOCATION_RED_BRIGHTNESS, brightness); //Record new setting
     analogWrite(BL_RW, 255 - brightness); //Controlled by PNP so reverse the brightness value
   }
   else if (color == GREEN)
   {
-    EEPROM.write(LOCATION_GREEN_BRIGHTNESS, brightness); //Record new setting
+    EEPROM.update(LOCATION_GREEN_BRIGHTNESS, brightness); //Record new setting
     analogWrite(BL_G, 255 - brightness); //Controlled by PNP so reverse the brightness value
   }
   else if (color == BLUE)
   {
-    EEPROM.write(LOCATION_BLUE_BRIGHTNESS, brightness); //Record new setting
+    EEPROM.update(LOCATION_BLUE_BRIGHTNESS, brightness); //Record new setting
     //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
     SoftPWMSet(BL_B, 255 - brightness); //Controlled by software PWM
   }
@@ -154,15 +154,15 @@ void changeBLBrightness(byte color, byte brightness)
 //with their rgb values to eliminate flicker. Incoming brightness values should be 0 to 255
 void changeBacklightRGB(byte red, byte green, byte blue) {
   //update red
-  EEPROM.write(LOCATION_RED_BRIGHTNESS, red); //Record new setting
+  EEPROM.update(LOCATION_RED_BRIGHTNESS, red); //Record new setting
   analogWrite(BL_RW, 255 - red); //Controlled by PNP so reverse the brightness value
 
   //update green
-  EEPROM.write(LOCATION_GREEN_BRIGHTNESS, green); //Record new setting
+  EEPROM.update(LOCATION_GREEN_BRIGHTNESS, green); //Record new setting
   analogWrite(BL_G, 255 - green); //Controlled by PNP so reverse the brightness value
 
   //update blue (SoftPWM)
-  EEPROM.write(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
+  EEPROM.update(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
   //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
   SoftPWMSet(BL_B, 255 - blue); //Controlled by software PWM
 }
@@ -216,7 +216,7 @@ void changeUARTSpeed(byte setting)
   }
 
   //Record this new buad rate
-  EEPROM.write(LOCATION_BAUD, settingUARTSpeed);
+  EEPROM.update(LOCATION_BAUD, settingUARTSpeed);
 
   //Display that we are at this new speed
   SerLCD.clear();
@@ -254,7 +254,7 @@ void changeSplashEnable()
   petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
   //Record this new setting
-  EEPROM.write(LOCATION_SPLASH_ONOFF, settingSplashEnable);
+  EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
 
   displayFrameBuffer(); //Return the contents of the display
 }
@@ -287,8 +287,8 @@ void changeLinesWidths(byte setting)
   clearFrameBuffer();
 
   //Record this new setting
-  EEPROM.write(LOCATION_WIDTH, settingLCDwidth);
-  EEPROM.write(LOCATION_LINES, settingLCDlines);
+  EEPROM.update(LOCATION_WIDTH, settingLCDwidth);
+  EEPROM.update(LOCATION_LINES, settingLCDlines);
 
   //Display new settings to the user
   SerLCD.clear();
