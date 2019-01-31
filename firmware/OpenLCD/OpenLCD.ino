@@ -3,15 +3,19 @@
   By: Nathan Seidle
   SparkFun Electronics
   Date: February 13th, 2015
-  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
+  License: This code is public domain but you buy me a beer if you use this and we 
+  meet someday (Beerware license).
 
-  OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD was the original
-  serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface and limited feature set.
-  This is an updated serial LCD.
+  OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD 
+  was the original serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface 
+  and limited feature set. This is an updated serial LCD.
 
-  Select 'SerLCD v2' as the board. We use an ATmega328P running at 11.0592MHz in order to have error free serial comm.
+  Select 'SparkFun SerLCD' as the board. We use an ATmega328P running at 11.0592MHz in 
+  order to have error free serial comm.
+
 
   Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
+
 
   Todo:
   Check how splash screen works on 16 vs 20 width displays
