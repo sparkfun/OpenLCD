@@ -1,5 +1,4 @@
 //Hardware pin definitions
-
 #define LCD_RS A0
 #define LCD_RW A1
 #define LCD_EN A2
@@ -40,6 +39,7 @@ const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on
 const byte DEFAULT_CONTRAST_LCD = 5;
+const byte DEFAULT_DISPLAY_SYSTEM_MESSAGES = true; //Enable messages
 
 //Internal EEPROM locations for the user settings
 #define LOCATION_BAUD 0
@@ -52,7 +52,8 @@ const byte DEFAULT_CONTRAST_LCD = 5;
 #define LOCATION_BLUE_BRIGHTNESS 7
 #define LOCATION_IGNORE_RX 8
 #define LOCATION_TWI_ADDRESS 9
-#define LOCATION_CONTRAST 10
+#define LOCATION_CONTRAST 10 //8 bit
+#define LOCATION_DISPLAY_SYSTEM_MESSAGES 11 //8 bit
 #define LOCATION_SPLASH_CONTENT 20 //This is 4*20 or 80 bytes wide
 #define LOCATION_CUSTOM_CHARACTERS 100 //This is 8*8 or 64 bytes wide
 
@@ -77,6 +78,7 @@ const byte DISPLAY_BUFFER_SIZE = 4*20; //4x20 the max number of characters we wi
 //Global setting variables
 byte settingLCDwidth;
 byte settingLCDlines;
-byte settingSplashEnable;
+bool settingSplashEnable;
 byte settingUARTSpeed;
-
+bool settingIgnoreRX;
+bool settingDisplaySystemMessages; //User can turn on/off the messages that are displayed when setting (like contrast) is changed

@@ -7,30 +7,52 @@
 //Toggle the ignore rx setting
 void changeIgnore()
 {
-  byte settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
+  settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
 
-  //Display new settings to the user
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0);
+  settingIgnoreRX != settingIgnoreRX; //Toggle setting
 
-  SerLCD.print(F("Ignore RX O"));
-
-  if (settingIgnoreRX == true)
-  {
-    settingIgnoreRX = false;
-    SerLCD.print(F("FF"));
-  }
-  else
-  {
-    settingIgnoreRX = true;
-    SerLCD.print(F("N"));
-  }
   //Record this new setting
   EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
 
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display new settings to the user
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0);
 
-  displayFrameBuffer(); //Return the contents of the display
+    SerLCD.print(F("Ignore RX O"));
+
+    if (settingIgnoreRX == true)
+      SerLCD.print(F("FF"));
+    else
+      SerLCD.print(F("N"));
+
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Return the contents of the display
+  }
+}
+
+//Toggle the 'displaySystemMessages' setting
+void changeDisplaySystemMessages()
+{
+  settingDisplaySystemMessages = EEPROM.read(LOCATION_DISPLAY_SYSTEM_MESSAGES);
+
+  settingDisplaySystemMessages != settingDisplaySystemMessages; //Toggle the setting
+
+  //Record this new setting
+  EEPROM.update(LOCATION_DISPLAY_SYSTEM_MESSAGES, settingDisplaySystemMessages);
+
+  //If user has just enabled messages, then push message to display
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display new setting to the user
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0);
+    SerLCD.print(F("Messages ON"));
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    displayFrameBuffer(); //Return the contents of the display
+  }
 }
 
 //Display the current firmware version for a set amount of time
@@ -58,16 +80,19 @@ void changeContrast(byte contrast)
   //Go to this new contrast
   analogWrite(LCD_CONTRAST, contrast);
 
-  //Display the new contrast
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
-  SerLCD.print("Contrast Set");
-  SerLCD.setCursor(0, 1); //First position, 2nd row
-  SerLCD.print(contrast);
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display the new contrast
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
+    SerLCD.print("Contrast Set");
+    SerLCD.setCursor(0, 1); //First position, 2nd row
+    SerLCD.print(contrast);
 
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
-  displayFrameBuffer(); //Display what was there before
+    displayFrameBuffer(); //Display what was there before
+  }
 }
 
 //Change the I2C or TWI address
@@ -78,16 +103,19 @@ void changeTWIAddress(byte newAddress)
 
   setupTWI(); //Leverage the regular startup function
 
-  //Display the new TWI address
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display the new TWI address
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
 
-  SerLCD.print("New TWI: 0x");
-  SerLCD.print(newAddress, HEX);
+    SerLCD.print("New TWI: 0x");
+    SerLCD.print(newAddress, HEX);
 
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
-  displayFrameBuffer(); //Display what was there before
+    displayFrameBuffer(); //Display what was there before
+  }
 }
 
 //Save the current frame buffer to EEPROM as the splash screen
@@ -97,15 +125,18 @@ void changeSplashContent()
   for (byte x = 0 ; x < settingLCDlines * settingLCDwidth ; x++)
     EEPROM.update(LOCATION_SPLASH_CONTENT + x, currentFrame[x]);
 
-  //Display the backlight setting
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display the backlight setting
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
 
-  SerLCD.print("Splash Recorded");
+    SerLCD.print("Splash Recorded");
 
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
-  displayFrameBuffer(); //Display what was there before
+    displayFrameBuffer(); //Display what was there before
+  }
 }
 
 //Changes the brightness of a given pin and updates the EEPROM location with that value
@@ -129,25 +160,28 @@ void changeBLBrightness(byte color, byte brightness)
     SoftPWMSet(BL_B, 255 - brightness); //Controlled by software PWM
   }
 
-  //Display the backlight setting
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display the backlight setting
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
 
-  if (color == RED)
-    SerLCD.print(F("Backlight"));
-  else if (color == GREEN)
-    SerLCD.print(F("Green"));
-  else if (color == BLUE)
-    SerLCD.print(F("Blue"));
+    if (color == RED)
+      SerLCD.print(F("Backlight"));
+    else if (color == GREEN)
+      SerLCD.print(F("Green"));
+    else if (color == BLUE)
+      SerLCD.print(F("Blue"));
 
-  SerLCD.print(F(": "));
+    SerLCD.print(F(": "));
 
-  brightness = map(brightness, 0, 255, 0, 100); //Covert to percentage
-  SerLCD.print(brightness);
-  SerLCD.print(F("%"));
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    brightness = map(brightness, 0, 255, 0, 100); //Covert to percentage
+    SerLCD.print(brightness);
+    SerLCD.print(F("%"));
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
-  displayFrameBuffer(); //Display what was there before
+    displayFrameBuffer(); //Display what was there before
+  }
 }
 
 //Changes the brightness of all three backlight pins and updates the EEPROM locations
@@ -218,45 +252,48 @@ void changeUARTSpeed(byte setting)
   //Record this new buad rate
   EEPROM.update(LOCATION_BAUD, settingUARTSpeed);
 
-  //Display that we are at this new speed
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0); //First position, 1st row
-  SerLCD.print(F("Baud now:"));
-  SerLCD.print(lookUpBaudRate(settingUARTSpeed));
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
-
   //Go to this new baud rate
   Serial.begin(lookUpBaudRate(settingUARTSpeed));
 
-  displayFrameBuffer(); //Display what was there before
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display that we are at this new speed
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
+    SerLCD.print(F("Baud now:"));
+    SerLCD.print(lookUpBaudRate(settingUARTSpeed));
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Display what was there before
+  }
 }
 
 void changeSplashEnable()
 {
-  byte settingSplashEnable = EEPROM.read(LOCATION_SPLASH_ONOFF);
+  settingSplashEnable = EEPROM.read(LOCATION_SPLASH_ONOFF);
 
-  //Display new settings to the user
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0);
-
-  SerLCD.print(F("Splash O"));
-
-  if (settingSplashEnable == true)
-  {
-    settingSplashEnable = false;
-    SerLCD.print(F("FF"));
-  }
-  else
-  {
-    settingSplashEnable = true;
-    SerLCD.print(F("N"));
-  }
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+  settingSplashEnable != settingSplashEnable; //Toggle setting
 
   //Record this new setting
   EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
 
-  displayFrameBuffer(); //Return the contents of the display
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display new settings to the user
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0);
+
+    SerLCD.print(F("Splash O"));
+
+    if (settingSplashEnable == true)
+      SerLCD.print(F("FF"));
+    else
+      SerLCD.print(F("N"));
+
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Return the contents of the display
+  }
 }
 
 void changeLinesWidths(byte setting)
@@ -290,28 +327,31 @@ void changeLinesWidths(byte setting)
   EEPROM.update(LOCATION_WIDTH, settingLCDwidth);
   EEPROM.update(LOCATION_LINES, settingLCDlines);
 
-  //Display new settings to the user
-  SerLCD.clear();
-  SerLCD.setCursor(0, 0);
-
-  SerLCD.print(F("Lines:"));
-  SerLCD.print(settingLCDlines);
-
-  //If we have a single line LCD then clear the message after a second and print more
-  if (settingLCDlines == 1)
+  if (settingDisplaySystemMessages == true)
   {
-    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    //Display new settings to the user
     SerLCD.clear();
     SerLCD.setCursor(0, 0);
-  }
-  else
-  {
-    SerLCD.setCursor(0, 1); //We are assuming at least a two line LCD
-  }
 
-  SerLCD.print(F("Width:"));
-  SerLCD.print(settingLCDwidth);
-  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+    SerLCD.print(F("Lines:"));
+    SerLCD.print(settingLCDlines);
 
-  displayFrameBuffer(); //Return the contents of the display
+    //If we have a single line LCD then clear the message after a second and print more
+    if (settingLCDlines == 1)
+    {
+      petSafeDelay(SYSTEM_MESSAGE_DELAY);
+      SerLCD.clear();
+      SerLCD.setCursor(0, 0);
+    }
+    else
+    {
+      SerLCD.setCursor(0, 1); //We are assuming at least a two line LCD
+    }
+
+    SerLCD.print(F("Width:"));
+    SerLCD.print(settingLCDwidth);
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Return the contents of the display
+  }
 }

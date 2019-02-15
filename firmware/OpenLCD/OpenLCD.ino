@@ -13,18 +13,17 @@
   Select 'SparkFun SerLCD' as the board. We use an ATmega328P running at 11.0592MHz in 
   order to have error free serial comm.
 
+  v11: 
+    Add faster backlight command
+    Change EEPROM write() to update()  
 
-  Backlight levels from original datasheet are wrong. Setting of 22 is 76%. See google doc
-
-
-  Todo:
-  Check how splash screen works on 16 vs 20 width displays
-  Establish and cut down on boot time
+  v12:
+    Add command to disable system messages displayed when settings change (contrast, UART, etc).
 */
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 1;
+const byte firmwareVersionMinor = 2;
 
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
@@ -80,6 +79,8 @@ void setup()
   //for(int x = 0 ; x < 200 ; x++)
   //  EEPROM.write(x, 0xFF);
 
+  setupSystemMessages(); //Load settings, such as displaySystemMessages
+  
   setupLCD(); //Initialize the LCD
 
   setupContrast(); //Set contrast
@@ -237,6 +238,11 @@ void updateDisplay()
       SerLCD.setCursor(0, 0);
 
       clearFrameBuffer(); //Get rid of all characters in our buffer
+    }
+    //Enable or disable the displaying of system messages
+    else if (incoming == 46) //. character
+    {
+      changeDisplaySystemMessages();
     }
     //If we get a second special setting character, then write it to the display
     //This allows us to print a pipe by escaping it as a double

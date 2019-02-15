@@ -87,7 +87,7 @@ void setupPower()
 void setupUART()
 {
   //Check to see if we are ignoring the RX reset or not
-  byte settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
+  settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
   if (settingIgnoreRX > 1)
   {
     settingIgnoreRX = false; //Don't ignore
@@ -161,6 +161,18 @@ void setupContrast()
   setPwmFrequency(LCD_CONTRAST, 1); //Set the freq of this pin so that it doesn't cause LCD to ripple
   pinMode(LCD_CONTRAST, OUTPUT);
   analogWrite(LCD_CONTRAST, settingContrast);
+}
+
+//Look up settings like the enabling of system messages
+void setupSystemMessages()
+{
+  //Look up if we should display messages or not
+  settingDisplaySystemMessages = EEPROM.read(LOCATION_DISPLAY_SYSTEM_MESSAGES);
+  if (settingDisplaySystemMessages > 1) //True = 1, false = 0
+  {
+    settingDisplaySystemMessages = DEFAULT_DISPLAY_SYSTEM_MESSAGES;
+    EEPROM.update(LOCATION_DISPLAY_SYSTEM_MESSAGES, settingDisplaySystemMessages);
+  }
 }
 
 //Look up and initialize the LCD with the lines and width
