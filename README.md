@@ -14,7 +14,9 @@ OpenLCD
   </tr>
 </table>
 
-These AVR-based Serial Enabled LCDs are based on the HD44780 controller, and include an AVR ATMega328p with an Arduino compatible bootloader. They accept control commands via Serial, I2C and SPI. 
+These AVR-based Serial Enabled LCDs are based on the HD44780 controller, and include an AVR ATmega328P with an Arduino compatible bootloader. They accept control commands via Serial, I2C and SPI. 
+
+This repo contains the firmware that runs on the SerLCD hardware. If you are looking for the Arduino Library to talk to these devices please go [here](https://github.com/sparkfun/SparkFun_SerLCD_Arduino_Library).
 
 Repository Contents
 -------------------
@@ -24,6 +26,7 @@ Repository Contents
 
 Documentation
 --------------
+* **[SparkFun SerLCD Arduino Library](https://github.com/sparkfun/SparkFun_SerLCD_Arduino_Library)** - Makes printing to and controlling the SerLCD a snap!
 * **[Hookup Guide](https://learn.sparkfun.com/tutorials/avr-based-serial-enabled-lcds-hookup-guide)** - Basic hookup guide for the SparkFun Open LCD Products.
 * **[SparkFun Fritzing repo](https://github.com/sparkfun/Fritzing_Parts)** - Fritzing diagrams for SparkFun products.
 * **[SparkFun 3D Model repo](https://github.com/sparkfun/3D_Models)** - 3D models of SparkFun products. 
