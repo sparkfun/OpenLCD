@@ -9,7 +9,11 @@ void changeIgnore()
 {
   settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
 
-  settingIgnoreRX != settingIgnoreRX; //Toggle setting
+  //Toggle the setting
+  if (settingIgnoreRX == true)
+    settingIgnoreRX = false;
+  else
+    settingIgnoreRX = true;
 
   //Record this new setting
   EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
@@ -33,26 +37,29 @@ void changeIgnore()
   }
 }
 
-//Toggle the 'displaySystemMessages' setting
-void changeDisplaySystemMessages()
+//Turn on messages like 'Contrast: 5' when user changes setting
+void enableDisplaySystemMessages()
 {
-  settingDisplaySystemMessages = EEPROM.read(LOCATION_DISPLAY_SYSTEM_MESSAGES);
-
-  settingDisplaySystemMessages != settingDisplaySystemMessages; //Toggle the setting
+  settingDisplaySystemMessages = true;
 
   //Record this new setting
   EEPROM.update(LOCATION_DISPLAY_SYSTEM_MESSAGES, settingDisplaySystemMessages);
 
-  //If user has just enabled messages, then push message to display
-  if (settingDisplaySystemMessages == true)
-  {
-    //Display new setting to the user
-    SerLCD.clear();
-    SerLCD.setCursor(0, 0);
-    SerLCD.print(F("Messages ON"));
-    petSafeDelay(SYSTEM_MESSAGE_DELAY);
-    displayFrameBuffer(); //Return the contents of the display
-  }
+  //Display new setting to the user
+  SerLCD.clear();
+  SerLCD.setCursor(0, 0);
+  SerLCD.print(F("Messages ON"));
+  petSafeDelay(SYSTEM_MESSAGE_DELAY);
+  displayFrameBuffer(); //Return the contents of the display
+}
+
+//Turn off system messsages
+void disableDisplaySystemMessages()
+{
+  settingDisplaySystemMessages = false;
+
+  //Record this new setting
+  EEPROM.update(LOCATION_DISPLAY_SYSTEM_MESSAGES, settingDisplaySystemMessages);
 }
 
 //Display the current firmware version for a set amount of time
@@ -272,7 +279,11 @@ void changeSplashEnable()
 {
   settingSplashEnable = EEPROM.read(LOCATION_SPLASH_ONOFF);
 
-  settingSplashEnable != settingSplashEnable; //Toggle setting
+  //Toggle setting
+  if (settingSplashEnable == true)
+    settingSplashEnable = false;
+  else
+    settingSplashEnable = true;
 
   //Record this new setting
   EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
@@ -289,6 +300,50 @@ void changeSplashEnable()
       SerLCD.print(F("FF"));
     else
       SerLCD.print(F("N"));
+
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Return the contents of the display
+  }
+}
+
+//Turn on splash at power on
+void enableSplash()
+{
+  settingSplashEnable = true;
+
+  //Record this new setting
+  EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
+
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display new settings to the user
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0);
+
+    SerLCD.print(F("Splash ON"));
+
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Return the contents of the display
+  }
+}
+
+//Disable the power on splash
+void disableSplash()
+{
+  settingSplashEnable = false;
+
+  //Record this new setting
+  EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
+
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display new settings to the user
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0);
+
+    SerLCD.print(F("Splash OFF"));
 
     petSafeDelay(SYSTEM_MESSAGE_DELAY);
 

@@ -239,11 +239,27 @@ void updateDisplay()
 
       clearFrameBuffer(); //Get rid of all characters in our buffer
     }
-    //Enable or disable the displaying of system messages
+    //Enable the displaying of system messages
     else if (incoming == 46) //. character
     {
-      changeDisplaySystemMessages();
+      enableDisplaySystemMessages();
     }
+    //Disable the displaying of system messages
+    else if (incoming == 47) // / character
+    {
+      disableDisplaySystemMessages();
+    }
+    //Enable the splash screen at power on
+    else if (incoming == 48) //0 character
+    {
+      enableSplash();
+    }
+    //Disable the splash screen at power on
+    else if (incoming == 49) //1 character
+    {
+      disableSplash();
+    }
+
     //If we get a second special setting character, then write it to the display
     //This allows us to print a pipe by escaping it as a double
     else if (incoming == 124) //| character

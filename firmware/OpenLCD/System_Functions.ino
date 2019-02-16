@@ -237,7 +237,7 @@ void setupSplash()
     EEPROM.update(LOCATION_SPLASH_ONOFF, settingSplashEnable);
   }
 
-  if (settingSplashEnable)
+  if (settingSplashEnable == true)
   {
     //Look up user content from memory
     byte content = EEPROM.read(LOCATION_SPLASH_CONTENT);
