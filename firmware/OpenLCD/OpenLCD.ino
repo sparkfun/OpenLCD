@@ -19,6 +19,7 @@
 
   v12:
     Add command to disable system messages displayed when settings change (contrast, UART, etc).
+    Add discrete commands to enableSplash and disableSplash. Better for embedded systems if it needs to disable splash.
 */
 
 //Firmware version. This is sent when requested. Helpful for tech support.
