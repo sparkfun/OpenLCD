@@ -5,6 +5,7 @@
   Date: February 13th, 2015
   License: This code is public domain but you buy me a beer if you use this and we 
   meet someday (Beerware license).
+  Customization by Brian Alano, Solar Stik.
 
   OpenLCD gives the user multiple interfaces (serial, I2C, and SPI) to control an LCD. SerLCD 
   was the original serial LCD from SparkFun that ran on the PIC 16F88 with only a serial interface 
@@ -25,6 +26,7 @@
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
 const byte firmwareVersionMinor = 2;
+const byte firmwareVersionCustom = 1;
 
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
@@ -94,7 +96,7 @@ void setup()
 
   setupUART(); //Setup serial, check for emergency reset after the splash is done
 
-  setupSPI(); //Initialize SPI stuff (enable, mode, interrupts)
+//  setupSPI(); //Initialize SPI stuff (enable, mode, interrupts)
 
   setupTWI(); //Initialize I2C stuff (address, interrupt, enable)
 
