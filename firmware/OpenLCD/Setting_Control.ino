@@ -27,9 +27,9 @@ void changeIgnore()
     SerLCD.print(F("Ignore RX O"));
 
     if (settingIgnoreRX == true)
-      SerLCD.print(F("FF"));
-    else
       SerLCD.print(F("N"));
+    else
+      SerLCD.print(F("FF"));
 
     petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
@@ -72,6 +72,8 @@ void displayFirmwareVersion()
   SerLCD.print(firmwareVersionMajor);
   SerLCD.print(F("."));
   SerLCD.print(firmwareVersionMinor);
+  SerLCD.print(F("."));
+  SerLCD.print(firmwareVersionCustom);
 
   petSafeDelay(SYSTEM_MESSAGE_DELAY);
 
@@ -174,7 +176,7 @@ void changeBLBrightness(byte color, byte brightness)
     SerLCD.setCursor(0, 0); //First position, 1st row
 
     if (color == RED)
-      SerLCD.print(F("Backlight"));
+      SerLCD.print(F("Red"));
     else if (color == GREEN)
       SerLCD.print(F("Green"));
     else if (color == BLUE)
