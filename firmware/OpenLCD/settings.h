@@ -1,4 +1,6 @@
 //Hardware pin definitions
+// Solar stik Version 1.2.1 (1.2 is OpenLCD version last number is Solar Stik
+
 #define LCD_RS A0
 #define LCD_RW A1
 #define LCD_EN A2
@@ -34,12 +36,15 @@
 
 const byte DEFAULT_TWI_ADDRESS = 0x72; //0x71 for Serial7Segment. 0x72 for SerLCD.
 const byte DEFAULT_BAUD = BAUD_9600;  //9600 for 8MHz, 2x speed
-const byte DEFAULT_BRIGHTNESS = 255;  //100%, full brightness
+// Solar Stik Orange
+const byte DEFAULT_RED = 255;
+const byte DEFAULT_GREEN = 42;
+const byte DEFAULT_BLUE = 1;
 const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on
-const byte DEFAULT_CONTRAST_LCD = 5;
-const byte DEFAULT_DISPLAY_SYSTEM_MESSAGES = true; //Enable messages
+const byte DEFAULT_CONTRAST_LCD = 40;
+const byte DEFAULT_DISPLAY_SYSTEM_MESSAGES = false; //Enable messages
 
 //Internal EEPROM locations for the user settings
 #define LOCATION_BAUD 0
