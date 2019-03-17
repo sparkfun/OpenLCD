@@ -88,11 +88,6 @@ void setupUART()
 {
   //Check to see if we are ignoring the RX reset or not
   settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
-  if (settingIgnoreRX > 1)
-  {
-    settingIgnoreRX = false; //Don't ignore
-    EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
-  }
 
   if (settingIgnoreRX == false) //If we are NOT ignoring RX, then
     checkEmergencyReset(); //Look to see if the RX pin is being pulled low
@@ -344,7 +339,7 @@ void checkEmergencyReset(void)
   pinMode(rxPin, INPUT_PULLUP); //Turn the RX pin into an input with pullups
 
   if (digitalRead(rxPin) == HIGH) return; //Quick pin check
-
+  SerLCD.print(rxPin);
   //Wait 2 seconds, blinking backlight while we wait
   pinMode(BL_RW, OUTPUT);
   digitalWrite(BL_RW, HIGH); //Set the STAT2 LED
@@ -367,7 +362,15 @@ void checkEmergencyReset(void)
   for (int x = 0 ; x < 200 ; x++) EEPROM.update(x, 0xFF);
 
   //Change contrast without notification message
-  analogWrite(LCD_CONTRAST, 40); //Set contrast to default
+  analogWrite(LCD_CONTRAST, DEFAULT_CONTRAST_LCD); //Set contrast to default
+
+  //Force ignoreRX to false.
+  EEPROM.update(LOCATION_IGNORE_RX, false);
+
+  //Change backlight to defaults
+  changeBLBrightness(RED, DEFAULT_RED);
+  changeBLBrightness(GREEN, DEFAULT_GREEN);
+  changeBLBrightness(BLUE, DEFAULT_BLUE);
 
   SerLCD.clear();
   SerLCD.print("System reset");
