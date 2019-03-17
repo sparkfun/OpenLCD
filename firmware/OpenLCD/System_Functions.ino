@@ -77,7 +77,7 @@ void setupPower()
 
   power_adc_disable(); //Not needed
   //power_twi_disable(); //We need this for I2C comm
-  //power_spi_disable(); //We need this for SPI comm
+  power_spi_disable(); //We need this for SPI comm
   //power_timer0_disable(); //We need this for delay()
   //power_timer1_disable(); //We need this for PWMing the contrast on pin 9
   //power_timer2_disable(); //We need this for PWMing the Blue backlight on pin 3
@@ -88,14 +88,11 @@ void setupUART()
 {
   //Check to see if we are ignoring the RX reset or not
   settingIgnoreRX = EEPROM.read(LOCATION_IGNORE_RX);
-  if (settingIgnoreRX > 1)
-  {
-    settingIgnoreRX = false; //Don't ignore
-    EEPROM.update(LOCATION_IGNORE_RX, settingIgnoreRX);
-  }
 
-  if (settingIgnoreRX == false) //If we are NOT ignoring RX, then
+  if (settingIgnoreRX == false) {
+    //If we are NOT ignoring RX, then
     checkEmergencyReset(); //Look to see if the RX pin is being pulled low
+  }
 
   //Read what the current UART speed is from EEPROM memory
   //Default is 9600
@@ -248,9 +245,9 @@ void setupSplash()
       //This should work with both 16 and 20 character displays
       SerLCD.clear();
       SerLCD.setCursor(0, 0); //First position, 1st row
-      SerLCD.print(F("SparkFun OpenLCD"));
+      SerLCD.print(F("   Solar Stik"));
       SerLCD.setCursor(0, 1); //First position, 2nd row
-      SerLCD.print(F("Baud:"));
+      SerLCD.print(F("Energy Anywhere"));
 
       //Read what the current UART speed is from EEPROM memory
       //Default is 9600
@@ -261,13 +258,15 @@ void setupSplash()
         EEPROM.update(LOCATION_BAUD, settingUARTSpeed);
       }
 
-      SerLCD.print(lookUpBaudRate(settingUARTSpeed));
+     // SerLCD.print(lookUpBaudRate(settingUARTSpeed));
 
       //Display firmware version
-      SerLCD.print(F(" v"));
-      SerLCD.print(firmwareVersionMajor);
-      SerLCD.print(F("."));
-      SerLCD.print(firmwareVersionMinor);
+//      SerLCD.print(F(" v"));
+//      SerLCD.print(firmwareVersionMajor);
+//      SerLCD.print(F("."));
+//      SerLCD.print(firmwareVersionMinor);
+//      SerLCD.print(F("."));
+//      SerLCD.print(firmwareVersionCustom);
     }
     else
     {
@@ -343,8 +342,10 @@ void checkEmergencyReset(void)
 
   pinMode(rxPin, INPUT_PULLUP); //Turn the RX pin into an input with pullups
 
-  if (digitalRead(rxPin) == HIGH) return; //Quick pin check
-
+  if (digitalRead(rxPin) == HIGH) {
+    return; //Quick pin check
+  }
+  SerLCD.print(rxPin);
   //Wait 2 seconds, blinking backlight while we wait
   pinMode(BL_RW, OUTPUT);
   digitalWrite(BL_RW, HIGH); //Set the STAT2 LED
@@ -367,7 +368,15 @@ void checkEmergencyReset(void)
   for (int x = 0 ; x < 200 ; x++) EEPROM.update(x, 0xFF);
 
   //Change contrast without notification message
-  analogWrite(LCD_CONTRAST, 40); //Set contrast to default
+  analogWrite(LCD_CONTRAST, DEFAULT_CONTRAST_LCD); //Set contrast to default
+
+  //Force ignoreRX to false.
+  EEPROM.update(LOCATION_IGNORE_RX, false);
+
+  //Change backlight to defaults
+  changeBLBrightness(RED, DEFAULT_RED);
+  changeBLBrightness(GREEN, DEFAULT_GREEN);
+  changeBLBrightness(BLUE, DEFAULT_BLUE);
 
   SerLCD.clear();
   SerLCD.print("System reset");
