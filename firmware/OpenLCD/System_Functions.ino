@@ -339,7 +339,6 @@ void checkEmergencyReset(void)
   pinMode(rxPin, INPUT_PULLUP); //Turn the RX pin into an input with pullups
 
   if (digitalRead(rxPin) == HIGH) return; //Quick pin check
-  SerLCD.print(rxPin);
   //Wait 2 seconds, blinking backlight while we wait
   pinMode(BL_RW, OUTPUT);
   digitalWrite(BL_RW, HIGH); //Set the STAT2 LED
