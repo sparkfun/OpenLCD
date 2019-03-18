@@ -34,7 +34,9 @@
 
 const byte DEFAULT_TWI_ADDRESS = 0x72; //0x71 for Serial7Segment. 0x72 for SerLCD.
 const byte DEFAULT_BAUD = BAUD_9600;  //9600 for 8MHz, 2x speed
-const byte DEFAULT_BRIGHTNESS = 255;  //100%, full brightness
+const byte DEFAULT_RED = 255;
+const byte DEFAULT_GREEN = 255;
+const byte DEFAULT_BLUE = 255;
 const byte DEFAULT_LINES = 2;
 const byte DEFAULT_WIDTH = 16;
 const byte DEFAULT_SPLASH = true; //Default on

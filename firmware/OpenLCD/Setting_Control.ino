@@ -26,7 +26,7 @@ void changeIgnore()
 
     SerLCD.print(F("Ignore RX O"));
 
-    if (settingIgnoreRX == true)
+    if (settingIgnoreRX == false)
       SerLCD.print(F("FF"));
     else
       SerLCD.print(F("N"));
