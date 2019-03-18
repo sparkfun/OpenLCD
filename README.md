@@ -18,7 +18,7 @@ These AVR-based Serial Enabled LCDs are based on the HD44780 controller, and inc
 
 This repo contains the firmware that runs on the SerLCD hardware. If you are looking for the Arduino Library to talk to these devices please go [here](https://github.com/sparkfun/SparkFun_SerLCD_Arduino_Library).
 
-Thank you for your help!
+And thank you to all those that helped make OpenLCD better:
 
 * **fourstix** - [Creating](https://github.com/sparkfun/OpenLCD/pull/13) an Arduino library to drive OpenLCD directly, added pipe character escaping
 * **makinako** - [Changing](https://github.com/sparkfun/OpenLCD/pull/18) EEPROM writes to updates to reduce NVM wear and tear
