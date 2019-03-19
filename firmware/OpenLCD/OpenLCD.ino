@@ -24,7 +24,7 @@
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 2;
+const byte firmwareVersionMinor = 3;
 
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
