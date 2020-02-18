@@ -164,7 +164,7 @@ void changeBLBrightness(byte color, byte brightness)
   {
     EEPROM.update(LOCATION_BLUE_BRIGHTNESS, brightness); //Record new setting
     //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
-    SoftPWMSet(BL_B, 255 - brightness); //Controlled by software PWM
+    SoftPWMSet(BL_B, brightness); //Controlled by software PWM. Reversed by SoftPWM
   }
 
   if (settingDisplaySystemMessages == true)
@@ -205,7 +205,7 @@ void changeBacklightRGB(byte red, byte green, byte blue) {
   //update blue (SoftPWM)
   EEPROM.update(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
   //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
-  SoftPWMSet(BL_B, 255 - blue); //Controlled by software PWM
+  SoftPWMSet(BL_B, blue); //Controlled by software PWM. Reversed by SoftPWM
 }
 
 //Changes the baud rate setting

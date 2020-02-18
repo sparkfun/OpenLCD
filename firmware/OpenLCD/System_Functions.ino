@@ -217,8 +217,9 @@ void setupBacklight()
   analogWrite(BL_RW, 255 - EEPROM.read(LOCATION_RED_BRIGHTNESS));
   analogWrite(BL_G, 255 - EEPROM.read(LOCATION_GREEN_BRIGHTNESS));
 
-  SoftPWMBegin(); //Start PWM
-  SoftPWMSet(BL_B, 255 - EEPROM.read(LOCATION_BLUE_BRIGHTNESS)); //Setup this pin to be controlled with SoftPWM. Initialize to EEPROM value
+  // SoftPWM has a true off (0 is really off), but not a true on (255 is not 100% duty cycle), so invert the logic to be able to fully turn off the blue LED.
+  SoftPWMBegin(SOFTPWM_INVERTED ); //Start PWM. 
+  SoftPWMSet(BL_B, EEPROM.read(LOCATION_BLUE_BRIGHTNESS)); //Setup this pin to be controlled with SoftPWM. Initialize to EEPROM value
   SoftPWMSetFadeTime(BL_B, 0, 0); //Don't fade - go immediately to this set PWM brightness
 }
 
