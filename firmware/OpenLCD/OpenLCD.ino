@@ -20,11 +20,17 @@
   v12:
     Add command to disable system messages displayed when settings change (contrast, UART, etc).
     Add discrete commands to enableSplash and disableSplash. Better for embedded systems if it needs to disable splash.
+
+  v13:
+    emergency reset bug fixed - https://github.com/sparkfun/OpenLCD/pull/21
+    
+  v14:
+    enable true off for blue LED - https://github.com/sparkfun/OpenLCD/pull/22
 */
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 3;
+const byte firmwareVersionMinor = 4;
 
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
