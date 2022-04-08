@@ -58,6 +58,12 @@ const byte DEFAULT_DISPLAY_SYSTEM_MESSAGES = true; //Enable messages
 #define LOCATION_DISPLAY_SYSTEM_MESSAGES 11 //8 bit
 #define LOCATION_SPLASH_CONTENT 20 //This is 4*20 or 80 bytes wide
 #define LOCATION_CUSTOM_CHARACTERS 100 //This is 8*8 or 64 bytes wide
+#define LOCATION_TWIST_STREAM 101 // 0 disables stream update of Twist information
+#define LOCATION_TWIST_RED_BRIGHTNESS 102
+#define LOCATION_TWIST_GREEN_BRIGHTNESS 103
+#define LOCATION_TWIST_BLUE_BRIGHTNESS 104
+#define LOCATION_TWIST_FOLLOW_LCD 105
+#define LOCATION_TWI_CLIENT_ADDR 106 // 255 client mode (default), <255 is host mode and i2c address of remote TWIST.
 
 //Define the various commands
 #define SPECIAL_COMMAND 254 //0xFE: The command to do special HD77480 commands
@@ -84,3 +90,8 @@ bool settingSplashEnable;
 byte settingUARTSpeed;
 bool settingIgnoreRX;
 bool settingDisplaySystemMessages; //User can turn on/off the messages that are displayed when setting (like contrast) is changed
+bool twistPresent; // indicator if twist rgb button is present.
+bool twistButtonPressed; // previous status of twist button.
+unsigned long twistPreviousMillis = 0;  
+unsigned long twistSampleDelay = 50;  
+bool enableTwistStream;

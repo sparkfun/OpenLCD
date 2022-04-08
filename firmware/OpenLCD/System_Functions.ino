@@ -128,17 +128,42 @@ void setupSPI()
 void setupTWI()
 {
   byte twiAddress;
-
+  
   twiAddress = EEPROM.read(LOCATION_TWI_ADDRESS);  // read the TWI address from
+  twistPresent = false; // assume Twist is not present, until detected.
+  if (EEPROM.read(LOCATION_TWI_CLIENT_ADDR) == 255)
+  { // initialize as Host modem. 
+    if ((twiAddress == 0) || (twiAddress > 0x7F))
+    { // If the TWI address is invalid, use a default address
+     twiAddress = DEFAULT_TWI_ADDRESS;
+     EEPROM.update(LOCATION_TWI_ADDRESS, DEFAULT_TWI_ADDRESS);
+    }
 
-  if ((twiAddress == 0) || (twiAddress > 0x7F))
-  { // If the TWI address is invalid, use a default address
-    twiAddress = DEFAULT_TWI_ADDRESS;
-    EEPROM.update(LOCATION_TWI_ADDRESS, DEFAULT_TWI_ADDRESS);
+    Wire.begin(twiAddress);  //Initialize Wire library as slave at twiAddress address
+    Wire.onReceive(twiReceive);  //Setup interrupt routine for when data is received
   }
-
-  Wire.begin(twiAddress);  //Initialize Wire library as slave at twiAddress address
-  Wire.onReceive(twiReceive);  //Setup interrupt routine for when data is received
+  else
+  { // look for Twist when not in client mode
+    twiAddress = EEPROM.read(LOCATION_TWI_CLIENT_ADDR);  // read the TWI address from
+    twistPresent = (bool) twist.begin(Wire, twiAddress); // twist default is 0x3F(63d)
+    if (twistPresent == false)
+    {
+      SerLCD.println("Twist is missing");
+      SerLCD.print("i2c addr: ");
+      SerLCD.println(twiAddress);
+    }
+    else
+    { 
+      // initialize twist rotorary counter to zero.
+      twist.setCount(0);
+      
+      // initialize state of twist button
+      twistButtonPressed = twist.isPressed();
+      
+      // initialize the enable for the polling stream
+      enableTwistStream = EEPROM.read(LOCATION_TWIST_STREAM);
+    }
+  }
 }
 
 //This sets up the contrast
@@ -221,6 +246,19 @@ void setupBacklight()
   SoftPWMBegin(SOFTPWM_INVERTED ); //Start PWM. 
   SoftPWMSet(BL_B, EEPROM.read(LOCATION_BLUE_BRIGHTNESS)); //Setup this pin to be controlled with SoftPWM. Initialize to EEPROM value
   SoftPWMSetFadeTime(BL_B, 0, 0); //Don't fade - go immediately to this set PWM brightness
+}
+
+//Look up and start the 3 Twist light
+void setupTwistLight()
+{
+  if (twistPresent == true) {
+    //update the TWIST
+    twist.setColor(
+      EEPROM.read(LOCATION_TWIST_RED_BRIGHTNESS),
+      EEPROM.read(LOCATION_TWIST_GREEN_BRIGHTNESS),
+      EEPROM.read(LOCATION_TWIST_BLUE_BRIGHTNESS)
+    );
+  };
 }
 
 void setupSplash()

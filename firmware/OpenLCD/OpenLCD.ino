@@ -30,7 +30,7 @@
 
 //Firmware version. This is sent when requested. Helpful for tech support.
 const byte firmwareVersionMajor = 1;
-const byte firmwareVersionMinor = 4;
+const byte firmwareVersionMinor = 5;
 
 #include <Wire.h> //For I2C functions
 #include <SPI.h> //For SPI functions
@@ -40,6 +40,8 @@ const byte firmwareVersionMinor = 4;
 #include <avr/wdt.h> //Watchdog to prevent system freeze
 #include <avr/sleep.h> //Needed for sleep_mode
 #include <avr/power.h> //Needed for powering down perihperals such as the ADC/TWI and Timers
+#include <SparkFun_Qwiic_Twist_Arduino_Library.h>
+TWIST twist;
 
 #include <SoftPWM.h> //Software PWM for Blue backlight: From https://github.com/bhagman/SoftPWM
 //SoftPWM uses Timer 2
@@ -65,7 +67,9 @@ enum displayMode
   MODE_CONTRAST, //First setting mode, then contrast change mode, then the value to change to
   MODE_TWI, //First setting mode, then I2C mode, then change I2C address
   MODE_RECORD_CUSTOM_CHAR, //First setting mode, then custom char mode, then record 8 bytes
-  MODE_SET_RGB //First setting mode, then RGB mode, then get 3 bytes
+  MODE_SET_RGB, //First setting mode, then RGB mode, then get 3 bytes
+  MODE_SET_TWIST_RGB, //First setting mode, then Twist RGB mode, then get 3 bytes
+  MODE_TWI_MODE_ADDR //First setting mode, then I2C mode, then change I2C address of remote client Twist.
 } currentMode = MODE_NORMAL;
 
 // Struct for circular data buffer
@@ -107,6 +111,8 @@ void setup()
   setupPower(); //Power down peripherals that we won't be using
 
   interrupts();  // Turn interrupts on, and let's go
+
+  setupTwistLight();
   wdt_enable(WDTO_250MS); //Unleash the beast
 }
 
@@ -120,6 +126,9 @@ void loop()
   serialEvent(); //Check the serial buffer for new data
 
   while (buffer.tail != buffer.head) updateDisplay(); //If there is new data in the buffer, display it!
+
+  if (enableTwistStream == true)
+    pollTwist();
 
   //Once we've cleared the buffer, go to sleep
   sleep_mode(); //Stop everything and go to sleep. Wake up if serial character received
@@ -266,6 +275,49 @@ void updateDisplay()
     {
       disableSplash();
     }
+    //Enable the remote client Twist rotorary serial output stream
+    else if (incoming == 50) //2  character
+    {
+      enableTwistStreaming();
+    }
+    //Disable the remote client Twist rotorary serial output stream
+    else if (incoming == 51) //3  character
+    {
+      disableTwistStreaming();
+    }
+    //Poll the remote client Twist rotorary encoder count
+    else if (incoming == 52) //4  character
+    {
+      pollTwistEncoder();
+    }
+    //Poll the remote client Twist rotorary button
+    else if (incoming == 53) //5  character
+    {
+      pollTwistButton();
+    }
+    //Set remote client TWIST RGB in one command to eliminate flicker
+    else if (incoming == 54) //6  character
+    {
+      currentMode = MODE_SET_TWIST_RGB; //Go to new mode
+    }
+    //Set remote client TWIST RGB to follow LCD background
+    else if (incoming == 55) //7  character
+    {
+      EEPROM.update(LOCATION_TWIST_FOLLOW_LCD, (byte) 255);
+    }
+    //Set remote client TWIST RGB not to follow LCD background
+    else if (incoming == 56) //8  character
+    {
+      EEPROM.update(LOCATION_TWIST_FOLLOW_LCD, (byte) 0);
+    }
+    //Set TWI client/host mode and when host mode set remote client i2c TWIST address
+    else if (incoming == 57) //9  character
+    {
+      currentMode = MODE_TWI_MODE_ADDR; //Go to new mode
+      //We now grab the next character on the next loop and use it to change the remote client TWIST address
+      // 255 sets TWI mode as client. Note the default value of EEPROM is 255, to be client. aka no remote client TWIST
+      // any other value sets TWI as Host and will be the address of the remote client i2c TWIST to poll.
+    }
 
     //If we get a second special setting character, then write it to the display
     //This allows us to print a pipe by escaping it as a double
@@ -302,6 +354,13 @@ void updateDisplay()
   {
     //Custom TWI address
     changeTWIAddress(incoming);
+
+    currentMode = MODE_NORMAL; //Return to normal operation
+  }
+  else if (currentMode == MODE_TWI_MODE_ADDR)
+  {
+    //set address of the remote client i2c TWI address
+    changeTWISTAddress(incoming);
 
     currentMode = MODE_NORMAL; //Return to normal operation
   }
@@ -453,6 +512,20 @@ void updateDisplay()
       currentMode = MODE_NORMAL; //Exit this mode
     } //if (rgbSpot > 2)
   } // else if modeSetRGB
+  else if (currentMode == MODE_SET_TWIST_RGB)
+  {
+    //We get into this mode if the user has sent the + (57) command to set the remote client TWIST rgb values
+    rgbData[rgbSpot] = incoming; //Record this byte to the array
+
+    rgbSpot++;
+    if (rgbSpot > 2)
+    {
+      //Once we have 3 bytes, stop listening and change the backlight color
+      rgbSpot = 0;
+      changeTwistlightRGB(rgbData[0], rgbData[1], rgbData[2]);
+      currentMode = MODE_NORMAL; //Exit this mode
+    } //if (rgbSpot > 2)
+  } // else if modeSetTwistRGB
 
 }
 

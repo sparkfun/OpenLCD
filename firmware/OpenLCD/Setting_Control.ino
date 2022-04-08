@@ -125,6 +125,29 @@ void changeTWIAddress(byte newAddress)
   }
 }
 
+//Change the remote client TWIST address
+void changeTWISTAddress(byte newAddress)
+{
+  //Record the new address
+  EEPROM.update(LOCATION_TWI_CLIENT_ADDR, newAddress);
+
+  setupTWI(); //Leverage the regular startup function
+
+  if (settingDisplaySystemMessages == true)
+  {
+    //Display the new TWI address
+    SerLCD.clear();
+    SerLCD.setCursor(0, 0); //First position, 1st row
+
+    SerLCD.print("New TWIST: 0x");
+    SerLCD.print(newAddress, HEX);
+
+    petSafeDelay(SYSTEM_MESSAGE_DELAY);
+
+    displayFrameBuffer(); //Display what was there before
+  }
+}
+
 //Save the current frame buffer to EEPROM as the splash screen
 void changeSplashContent()
 {
@@ -150,21 +173,33 @@ void changeSplashContent()
 //Incoming brightness should be 0 to 255
 void changeBLBrightness(byte color, byte brightness)
 {
+  byte red = EEPROM.read(LOCATION_RED_BRIGHTNESS);
+  byte green = EEPROM.read(LOCATION_GREEN_BRIGHTNESS);
+  byte blue = EEPROM.read(LOCATION_BLUE_BRIGHTNESS);
   if (color == RED)
   {
     EEPROM.update(LOCATION_RED_BRIGHTNESS, brightness); //Record new setting
     analogWrite(BL_RW, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    if ( EEPROM.read(LOCATION_TWIST_FOLLOW_LCD) > 0) {
+      changeTwistlightRGB(brightness, green, blue);
+    }
   }
   else if (color == GREEN)
   {
     EEPROM.update(LOCATION_GREEN_BRIGHTNESS, brightness); //Record new setting
     analogWrite(BL_G, 255 - brightness); //Controlled by PNP so reverse the brightness value
+    if ( EEPROM.read(LOCATION_TWIST_FOLLOW_LCD) > 0) {
+      changeTwistlightRGB(red, brightness, blue);
+    }
   }
   else if (color == BLUE)
   {
     EEPROM.update(LOCATION_BLUE_BRIGHTNESS, brightness); //Record new setting
     //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
     SoftPWMSet(BL_B, brightness); //Controlled by software PWM. Reversed by SoftPWM
+    if ( EEPROM.read(LOCATION_TWIST_FOLLOW_LCD) > 0) {
+      changeTwistlightRGB(red, green, brightness);
+    }
   }
 
   if (settingDisplaySystemMessages == true)
@@ -206,6 +241,21 @@ void changeBacklightRGB(byte red, byte green, byte blue) {
   EEPROM.update(LOCATION_BLUE_BRIGHTNESS, blue); //Record new setting
   //analogWrite(BL_B, 255 - brightness); //Controlled by PNP so reverse the brightness value
   SoftPWMSet(BL_B, blue); //Controlled by software PWM. Reversed by SoftPWM
+  if ( EEPROM.read(LOCATION_TWIST_FOLLOW_LCD) > 0) {
+    changeTwistlightRGB(red, green, blue);
+  }
+}
+
+void changeTwistlightRGB(byte red, byte green, byte blue) {
+  //update EEPROM
+  EEPROM.update(LOCATION_TWIST_RED_BRIGHTNESS, red); //Record new setting
+  EEPROM.update(LOCATION_TWIST_GREEN_BRIGHTNESS, green); //Record new setting
+  EEPROM.update(LOCATION_TWIST_BLUE_BRIGHTNESS, blue); //Record new setting
+
+  //update the TWIST
+  if (twistPresent == true) {
+    twist.setColor(red, green, blue);
+  }
 }
 
 //Changes the baud rate setting
@@ -410,3 +460,68 @@ void changeLinesWidths(byte setting)
     displayFrameBuffer(); //Return the contents of the display
   }
 }
+
+// poll the Twist Rotoray Encoder and Button
+void pollTwist(void)
+{
+  if (twistPresent == true)
+  {
+    bool pressed;
+    unsigned long currentMillis = millis();
+
+    if(currentMillis - twistPreviousMillis > twistSampleDelay) {
+      // delay needed to match speed with Twist
+      twistPreviousMillis = currentMillis;   
+    
+      if (twist.getDiff())
+      {
+        pollTwistEncoder();
+      }
+
+      pressed = twist.isPressed();
+      if (pressed != twistButtonPressed)
+      {
+        printTwistButton(pressed);
+        twistButtonPressed = pressed;
+      }
+    }
+  }
+}
+
+//Poll the Twist rotorary encoder count
+void pollTwistEncoder(void)
+{
+  Serial.print("Count: ");
+  Serial.println(twist.getCount());
+}
+
+//Poll the Twist rotorary button
+void pollTwistButton(void)
+{
+  printTwistButton(twist.isPressed());
+}
+
+void printTwistButton(bool pressed)
+{
+  if (pressed)
+    Serial.println("Button depressed");
+  else
+    Serial.println("Button released");
+}
+
+void disableTwistStreaming()
+{
+  enableTwistStream = false;
+
+  //Record this new setting
+  EEPROM.update(LOCATION_TWIST_STREAM, enableTwistStream);
+}
+
+void enableTwistStreaming()
+{
+  enableTwistStream = true;
+
+  //Record this new setting
+  EEPROM.update(LOCATION_TWIST_STREAM, enableTwistStream);
+}
+
